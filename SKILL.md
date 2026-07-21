@@ -146,6 +146,8 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 
 | 字段 | 规则 |
 |------|------|
+| `place_raw` | 原文中的地名，**原样保留**，不改写 |
+| `place_modern` | **必填**。用你的知识将古地名翻译为现代地名或通用英文名，供坐标解析使用。格式：现代中文地名（如「昆明」「撒马尔罕」），对于中国境外或生僻地名，可填英文（如「Samarkand」「Tokmok, Kyrgyzstan」）。若完全不确定，填与 `place_raw` 相同的字符串。**此字段是坐标解析成功率的关键。** |
 | `layer` | `"major"` = 有明确停留/住宿/重要事件；`"transit"` = 仅路过提及 |
 | `confidence` | `"confirmed"` / `"single_source"` / `"inferred"` / `"disputed"`（见 Phase A-2.5）|
 | `route_to_next` | `"described"` = 原文有路线描述；`"straight"` = 无描述，地图画虚线直线 |
@@ -210,8 +212,9 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
   ↓
 坐标解析（调用 geocode.py）：
   python scripts/geocode.py 逐个地名解析
-  — 先查 references/ancient-place-names.md
-  — 未命中 → 调用 OSM Nominatim API（间隔 ≥1.1 秒）
+  — 先查 references/ancient-place-names.md（精选历史地名库）
+  — 未命中 → 用 place_modern 字段的现代地名查 OSM Nominatim（间隔 ≥1.1 秒）
+  — 仍失败 → 用 place_raw 原始地名再查一次 Nominatim
   — 全部失败 → 标记 resolved=false，收入「待确认列表」
 ```
 
