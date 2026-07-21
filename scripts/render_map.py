@@ -153,16 +153,6 @@ def _build_timeline_html(waypoints: list[dict]) -> str:
                 f'<div class="timeline-divider">{chapter_title}</div>'
             )
 
-        # 来源徽章
-        source = first_visit.get("source", "web")
-        badge_map = {
-            "pdf": ('pdf', 'PDF'),
-            "user-pdf": ('pdf', '用户PDF'),
-            "web": ('web', '检索'),
-            "inferred": ('inferred', '推测'),
-        }
-        badge_cls, badge_text = badge_map.get(source, ('web', source))
-
         # 置信度徽章
         confidence = wp.get("confidence", "single_source")
         conf_badge_map = {
@@ -191,7 +181,6 @@ def _build_timeline_html(waypoints: list[dict]) -> str:
   <div class="tl-place">{place_display}{unresolved_note} <span class="tl-conf {conf_cls}" title="{confidence}">{conf_symbol}</span></div>
   {f'<div class="tl-time">{time_display}</div>' if time_display else ''}
   {f'<div class="tl-chapter">{chapter_title}</div>' if chapter_title and visit_count > 1 else ''}
-  <span class="tl-badge {badge_cls}">{badge_text}</span>
 </div>''')
 
     return "\n".join(html_parts)
