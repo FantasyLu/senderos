@@ -1,0 +1,627 @@
+[
+  {
+    "order": 1,
+    "place_raw": "达瓦扎燃烧坑",
+    "place_modern": "Darvaza gas crater, Turkmenistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.2526,
+    "lon": 58.4396,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 2,
+        "chapter_title": "地狱之门",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "一夜",
+        "description": "夜访达瓦扎天然气燃烧坑（地狱之门），在火坑边缘独自迷路",
+        "source": "pdf",
+        "source_sentence": "我迷路了。地坑中的火焰磨灭了星光，让所有光线的阴影也消散无踪。"
+      }
+    ]
+  },
+  {
+    "order": 2,
+    "place_raw": "阿什哈巴德",
+    "place_modern": "Ashgabat, Turkmenistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 37.9378,
+    "lon": 58.2359,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 4,
+        "chapter_title": "大理石之城",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "深度游历土库曼斯坦首都，参观大理石建筑、总统宫殿、骏马大赛",
+        "source": "pdf",
+        "source_sentence": "所有这些大理石让我眼花缭乱。公寓楼群拔地而起，像一片被积雪覆盖的森林。"
+      }
+    ]
+  },
+  {
+    "order": 3,
+    "place_raw": "卡拉库姆沙漠",
+    "place_modern": "Karakum Desert, Turkmenistan",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.1152,
+    "lon": 59.8616,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 6,
+        "chapter_title": "沙漠之花",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "",
+        "description": "穿越卡拉库姆沙漠，在沙漠村落中骑马",
+        "source": "pdf",
+        "source_sentence": "我在沙漠中骑在一匹马的马背上。"
+      }
+    ]
+  },
+  {
+    "order": 4,
+    "place_raw": "马雷",
+    "place_modern": "Mary, Turkmenistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 37.594,
+    "lon": 61.8398,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 8,
+        "chapter_title": "最后的勘探",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "探访古代梅尔夫遗址（马雷），参观古丝绸之路遗址",
+        "source": "pdf",
+        "source_sentence": "我们能够成功揭开多少层？我们得回到土库曼巴希和他的金色塑像之前。"
+      }
+    ]
+  },
+  {
+    "order": 5,
+    "place_raw": "土库曼巴希",
+    "place_modern": "Turkmenbashi, Turkmenistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.0055,
+    "lon": 52.9933,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 9,
+        "chapter_title": "至高幸福时代",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "短暂停留",
+        "description": "抵达里海边的土库曼巴希港口城市，准备过境哈萨克斯坦",
+        "source": "pdf",
+        "source_sentence": "当土库曼斯坦航空的飞机机轮触地时，里海沐浴在一片橘黄色光线下。"
+      }
+    ]
+  },
+  {
+    "order": 6,
+    "place_raw": "土库曼-哈萨克边境",
+    "place_modern": "Garabogaz border crossing, Turkmenistan-Kazakhstan",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 41.283,
+    "lon": 52.983,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "推测为卡拉博加兹边境口岸附近",
+    "visits": [
+      {
+        "chapter_num": 10,
+        "chapter_title": "边境",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "",
+        "description": "穿越土库曼-哈萨克边境，过境手续繁琐，历经数小时",
+        "source": "pdf",
+        "source_sentence": "载我从土库曼巴希去哈萨克斯坦边境冷清的小检查站的司机向我透露，他打算移民。"
+      }
+    ]
+  },
+  {
+    "order": 7,
+    "place_raw": "阿克套",
+    "place_modern": "Aktau, Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 43.6536,
+    "lon": 51.2309,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 11,
+        "chapter_title": "寿司与自动取款机的绿洲",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "抵达哈萨克斯坦里海港口城市阿克套，感受前苏联城市与现代化的冲突",
+        "source": "pdf",
+        "source_sentence": "在阿克套的几天，我几乎都是独处，多数时间都在酒店房间里懒洋洋躺着。"
+      }
+    ]
+  },
+  {
+    "order": 8,
+    "place_raw": "咸海",
+    "place_modern": "Aral Sea, Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 45.0,
+    "lon": 59.5,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 13,
+        "chapter_title": "消失的海",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "参观正在消失的咸海，目睹生态灾难现场，废弃船只搁浅沙漠",
+        "source": "pdf",
+        "source_sentence": "离明天还有很长时间，最年长的警卫声音低沉地说，您不能坐在这儿。"
+      }
+    ]
+  },
+  {
+    "order": 9,
+    "place_raw": "图尔科巴斯",
+    "place_modern": "Turtkul, Kazakhstan",
+    "layer": "major",
+    "confidence": "single_source",
+    "route_to_next": "straight",
+    "lat": 43.55,
+    "lon": 61.0,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "推测位置，靠近阿克苏-热巴格雷国家公园",
+    "visits": [
+      {
+        "chapter_num": 15,
+        "chapter_title": "哈萨克马球",
+        "time_raw": "5月9日",
+        "time_note": "胜利日",
+        "duration": "一天",
+        "description": "观看胜利日哈萨克马球赛，体验草原节日",
+        "source": "pdf",
+        "source_sentence": "5月9日的胜利日是一个苏联公共假日，整个原苏联帝国所属地每年仍会热热闹闹地庆祝这个节日。"
+      }
+    ]
+  },
+  {
+    "order": 10,
+    "place_raw": "卡拉干达",
+    "place_modern": "Karaganda, Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 49.8047,
+    "lon": 73.1094,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 16,
+        "chapter_title": "斯大林的棋子",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "参观卡拉干达，了解苏联古拉格历史，探访法蒂玛圣母大教堂",
+        "source": "pdf",
+        "source_sentence": "这个中亚最大的教堂几乎挤满了人。"
+      }
+    ]
+  },
+  {
+    "order": 11,
+    "place_raw": "阿斯塔纳",
+    "place_modern": "Astana (Nur-Sultan), Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 51.1801,
+    "lon": 71.446,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 17,
+        "chapter_title": "首都",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览哈萨克斯坦新首都阿斯塔纳，感受未来主义建筑与威权政治",
+        "source": "pdf",
+        "source_sentence": "我们沿着阿斯塔纳宽阔而灯火通明的大道行驶时，浅蓝色和黄色的哈萨克斯坦国旗在晚风中飘动。"
+      }
+    ]
+  },
+  {
+    "order": 12,
+    "place_raw": "塞米巴拉金斯克",
+    "place_modern": "Semey (Semipalatinsk), Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 50.4111,
+    "lon": 80.2275,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 18,
+        "chapter_title": "伟大试验",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "探访苏联核试验场遗址，了解核爆对当地居民的长期影响",
+        "source": "pdf",
+        "source_sentence": "我乘坐的这架小飞机正缓缓爬上云端，即将载着我往东南方飞，去往塞米巴拉金斯克。"
+      }
+    ]
+  },
+  {
+    "order": 13,
+    "place_raw": "阿拉木图",
+    "place_modern": "Almaty, Kazakhstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 43.2567,
+    "lon": 76.9286,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 20,
+        "chapter_title": "脆弱的心",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览哈萨克斯坦旧都阿拉木图，探访麦迪奥滑冰场，拜访人权活动家",
+        "source": "pdf",
+        "source_sentence": "一架旧螺旋桨飞机载着我从塞米巴拉金斯克前往我此行的最后一站，阿拉木图。"
+      }
+    ]
+  },
+  {
+    "order": 14,
+    "place_raw": "比什凯克",
+    "place_modern": "Bishkek, Kyrgyzstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 42.8746,
+    "lon": 74.5698,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 31,
+        "chapter_title": "自由的时刻",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "抵达吉尔吉斯斯坦首都比什凯克，了解2005年郁金香革命历史",
+        "source": "pdf",
+        "source_sentence": "1991年，苏联解体，吉尔吉斯斯坦成为独立国家。"
+      }
+    ]
+  },
+  {
+    "order": 15,
+    "place_raw": "伊塞克湖",
+    "place_modern": "Issyk-Kul Lake, Kyrgyzstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 42.45,
+    "lon": 77.25,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 32,
+        "chapter_title": "别哭，你现在是我的妻子了",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览伊塞克湖，了解吉尔吉斯传统婚俗与抢婚习俗",
+        "source": "pdf",
+        "source_sentence": "第一天，第二天，湖畔的生活节奏轻柔缓慢。"
+      }
+    ]
+  },
+  {
+    "order": 16,
+    "place_raw": "宋科尔湖",
+    "place_modern": "Son-Kul Lake, Kyrgyzstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 41.85,
+    "lon": 75.12,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 33,
+        "chapter_title": "养鹰人",
+        "time_raw": "7月",
+        "time_note": "",
+        "duration": "数日",
+        "description": "在高山牧场拜访猎鹰手，体验吉尔吉斯游牧生活",
+        "source": "pdf",
+        "source_sentence": "1980年，7月，山间的空气清冽而透明。"
+      }
+    ]
+  },
+  {
+    "order": 17,
+    "place_raw": "奥什",
+    "place_modern": "Osh, Kyrgyzstan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.5283,
+    "lon": 72.7985,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 36,
+        "chapter_title": "6月的五天",
+        "time_raw": "6月",
+        "time_note": "",
+        "duration": "数日",
+        "description": "探访奥什，了解2010年6月吉尔吉斯-乌兹别克族群冲突遗留创伤",
+        "source": "pdf",
+        "source_sentence": "6月，2010年，奥什发生了严重的族群冲突。"
+      }
+    ]
+  },
+  {
+    "order": 18,
+    "place_raw": "杜尚别",
+    "place_modern": "Dushanbe, Tajikistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 38.5598,
+    "lon": 68.7739,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 23,
+        "chapter_title": "一记重击",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "抵达塔吉克斯坦首都杜尚别，参观世界最高旗杆，了解内战后的重建",
+        "source": "pdf",
+        "source_sentence": "黎明的第一束光在树梢上方慢慢显现。从远处看，红白绿三色的塔吉克斯坦国旗在清晨的微风中懒洋洋地飘动。"
+      }
+    ]
+  },
+  {
+    "order": 19,
+    "place_raw": "苦盏",
+    "place_modern": "Khujand, Tajikistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.2833,
+    "lon": 69.6167,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 24,
+        "chapter_title": "与时代脱节",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "穿越安索布「死亡隧道」抵达苦盏，塔吉克斯坦第二大城市",
+        "source": "pdf",
+        "source_sentence": "以「末日隧道」或「死亡隧道」之名广为人知的安索布隧道是一场灾难。"
+      }
+    ]
+  },
+  {
+    "order": 20,
+    "place_raw": "塔什干",
+    "place_modern": "Tashkent, Uzbekistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 41.2995,
+    "lon": 69.2401,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 39,
+        "chapter_title": "装门面的艺术",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "抵达乌兹别克斯坦首都塔什干，感受高压政权下的表面繁荣",
+        "source": "pdf",
+        "source_sentence": "在宏伟的大理石航站楼外面，我感受到一种似曾相识的压抑。"
+      }
+    ]
+  },
+  {
+    "order": 21,
+    "place_raw": "费尔干纳",
+    "place_modern": "Fergana, Uzbekistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.3864,
+    "lon": 71.7864,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 40,
+        "chapter_title": "不过都是造梦的材料",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "探访费尔干纳盆地，了解丝绸之路的历史与当代棉花产业",
+        "source": "pdf",
+        "source_sentence": "几天之内，我走遍了费尔干纳盆地最重要的城市。"
+      }
+    ]
+  },
+  {
+    "order": 22,
+    "place_raw": "木鹿（古城）",
+    "place_modern": "Ancient Merv, Mary, Turkmenistan",
+    "layer": "transit",
+    "confidence": "single_source",
+    "route_to_next": "straight",
+    "lat": 37.677,
+    "lon": 62.193,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 8,
+        "chapter_title": "最后的勘探",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "",
+        "description": "参观古代梅尔夫（木鹿）遗址，丝绸之路上保存最好的绿洲城市之一",
+        "source": "pdf",
+        "source_sentence": "梅尔夫位于土库曼斯坦东部，曾经是个名声赫赫的大城市，遗址覆盖了很大一片区域。"
+      }
+    ]
+  },
+  {
+    "order": 23,
+    "place_raw": "撒马尔罕",
+    "place_modern": "Samarkand, Uzbekistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 39.6542,
+    "lon": 66.9597,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 43,
+        "chapter_title": "追寻逝去的时间",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览帖木儿帝国古都撒马尔罕，参观列吉斯坦广场和沙赫静达陵墓群",
+        "source": "pdf",
+        "source_sentence": "撒马尔罕，这座城市的名字本身就是一首诗。"
+      }
+    ]
+  },
+  {
+    "order": 24,
+    "place_raw": "布哈拉",
+    "place_modern": "Bukhara, Uzbekistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 39.7747,
+    "lon": 64.4286,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 44,
+        "chapter_title": "丝路上的珍珠",
+        "time_raw": "11月",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览丝路古城布哈拉，参观伊斯兰圣城的清真寺和经学院",
+        "source": "pdf",
+        "source_sentence": "11月，布哈拉的游客比夏天少了许多，街道显得格外宁静。"
+      }
+    ]
+  },
+  {
+    "order": 25,
+    "place_raw": "希瓦",
+    "place_modern": "Khiva, Uzbekistan",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 41.3783,
+    "lon": 60.3619,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
+    "visits": [
+      {
+        "chapter_num": 45,
+        "chapter_title": "终点站",
+        "time_raw": "",
+        "time_note": "",
+        "duration": "数日",
+        "description": "游览希瓦古城，乌兹别克斯坦行程终点，感受保存完好的伊斯兰古城",
+        "source": "pdf",
+        "source_sentence": "希瓦，我此行的最后一站，一座完整保存下来的中世纪城市。"
+      }
+    ]
+  }
+]

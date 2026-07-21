@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>徐霞客人生游历路线</title>
+<title>徐霞客游历路线</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
@@ -68,6 +68,48 @@
     flex-direction: column;
     flex-shrink: 0;
     overflow: hidden;
+    transition: width 0.25s ease;
+  }
+  #sidebar.collapsed {
+    width: 0;
+    border-right: none;
+  }
+  #sidebar.collapsed #sidebar-header,
+  #sidebar.collapsed #timeline,
+  #sidebar.collapsed #route-mode-toggle,
+  #sidebar.collapsed #seq-controls {
+    display: none;
+  }
+  /* toggle 按钮：绝对定位在 #main 左边缘，跟随 sidebar 宽度 */
+  #sidebar-toggle-btn {
+    position: absolute;
+    left: 280px;   /* 展开时 = sidebar 宽度 */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1100;
+    width: 28px;
+    height: 96px;
+    background: rgba(240, 232, 212, 0.95);
+    border: 1px solid #d4c4a0;
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #5a4030;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.12);
+    transition: left 0.25s ease, background 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+  #sidebar-toggle-btn:hover { background: #e8d8b0; }
+  #sidebar.collapsed ~ #sidebar-toggle-btn,
+  #main.sidebar-collapsed #sidebar-toggle-btn {
+    left: 0;
   }
   #sidebar-header {
     padding: 12px 16px;
@@ -117,33 +159,16 @@
   .timeline-item .tl-time {
     font-size: 11px;
     color: #806040;
+    margin-top: 1px;
+  }
+  .timeline-item .tl-duration {
+    color: #6a7050;
   }
   .timeline-item .tl-chapter {
     font-size: 11px;
     color: #9a7a50;
     margin-top: 2px;
     font-style: italic;
-  }
-  .timeline-item .tl-badge {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 10px;
-  }
-  .tl-badge.inferred {
-    background: #f0d080;
-    color: #806020;
-  }
-  .tl-badge.pdf {
-    background: #c0d8f0;
-    color: #204060;
-  }
-  .tl-badge.web {
-    background: #c0e8c0;
-    color: #205020;
   }
   .timeline-divider {
     padding: 6px 16px 2px;
@@ -167,19 +192,53 @@
     background: rgba(250, 246, 238, 0.95);
     border: 1px solid #c4b090;
     border-radius: 6px;
-    padding: 12px 14px;
     font-size: 12px;
     line-height: 1.8;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     min-width: 160px;
+    overflow: hidden;
+    transition: min-width 0.2s;
   }
-  .legend-title {
-    font-weight: 700;
-    font-size: 13px;
-    color: #3a2a10;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
+  .legend-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px 12px;
+    background: #f0e8d4;
+    border: none;
     border-bottom: 1px solid #d4c090;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a2a10;
+    letter-spacing: 0.05em;
+    text-align: left;
+    border-radius: 0;
+  }
+  .legend-toggle-btn:hover { background: #e8d8b0; }
+  .legend-body {
+    padding: 10px 14px;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+    max-height: 400px;
+    overflow: hidden;
+  }
+  .legend.collapsed .legend-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .legend.collapsed {
+    min-width: 0;
+  }
+  .legend-title-arrow {
+    font-size: 10px;
+    margin-left: 6px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .legend.collapsed .legend-title-arrow {
+    transform: rotate(-90deg);
   }
   .legend-item {
     display: flex;
@@ -189,19 +248,11 @@
     margin: 3px 0;
   }
   .legend-marker {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.3); flex-shrink: 0;
   }
   .legend-line {
     width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px;
-  }
-  .legend-line.dashed {
-    background: repeating-linear-gradient(
-      to right,
-      #9b30d0 0px, #9b30d0 5px,
-      transparent 5px, transparent 9px
-    );
-    height: 2px;
   }
 
   /* ── Popup 样式 ── */
@@ -335,29 +386,85 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    background: rgba(26, 26, 46, 0.92);
-    border-radius: 20px;
-    padding: 6px 10px;
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    max-width: 80vw;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
   }
-  .stage-btn {
+  /* 收起状态：只显示胶囊按钮 */
+  #stage-switcher.collapsed #stage-panel {
+    display: none;
+  }
+  #stage-toggle-btn {
+    display: block;
+    background: rgba(26, 26, 46, 0.88);
+    color: #e8d5b0;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    transition: background 0.15s;
+    user-select: none;
+    letter-spacing: 0.04em;
+  }
+  #stage-toggle-btn:hover { background: rgba(40, 40, 70, 0.95); }
+  /* 展开的筛选面板 */
+  #stage-panel {
+    margin-top: 6px;
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #e8d5b0;
+  }
+  #stage-panel label { color: #c0a880; font-size: 11px; }
+  #stage-panel select {
+    background: rgba(255,255,255,0.1);
+    color: #f0e4c8;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    max-width: 180px;
+    outline: none;
+  }
+  #stage-panel select:focus { border-color: rgba(255,255,255,0.45); }
+  #stage-panel select option { background: #1a1a2e; color: #f0e4c8; }
+  #stage-apply-btn {
+    background: #c0703a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  #stage-apply-btn:hover { background: #d4844a; }
+  #stage-all-btn {
     background: rgba(255,255,255,0.12);
     color: #e8d5b0;
     border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 14px;
-    padding: 3px 12px;
+    border-radius: 8px;
+    padding: 4px 10px;
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.15s;
     white-space: nowrap;
   }
-  .stage-btn:hover  { background: rgba(255,255,255,0.22); }
-  .stage-btn.active { background: #c0703a; border-color: #e08050; color: #fff; }
-  .stage-btn.all    { background: rgba(255,255,255,0.18); }
+  #stage-all-btn:hover { background: rgba(255,255,255,0.22); }
+  #stage-range-label {
+    font-size: 11px;
+    color: #a09070;
+    margin-left: 4px;
+  }
 
   /* ── 滚动条 ── */
   #timeline::-webkit-scrollbar { width: 5px; }
@@ -424,16 +531,16 @@
 
 <!-- 顶部标题栏 -->
 <div id="header">
-  <h1>徐霞客人生游历路线</h1>
-  <span class="subtitle">1607–1641，足迹遍布16省</span>
+  <h1>徐霞客游历路线</h1>
+  <span class="subtitle">1607–1641</span>
   <div class="stats">
     <div class="stat-item">
       <span class="stat-dot" style="background:#c0703a;"></span>
-      主要节点 27 处
+      主要节点 21 处
     </div>
     <div class="stat-item">
       <span class="stat-dot" style="background:#8090a0; border: 1px solid #607080;"></span>
-      途经 7 处
+      途经 2 处
     </div>
     <div class="stat-item">
       <span class="stat-dot" style="background:#d4b040; border: 1px dashed #a08020;"></span>
@@ -455,249 +562,205 @@
 </div>
 
 <!-- 主体 -->
-<div id="main">
+<div id="main" style="position:relative;">
 
   <!-- 时间轴侧边栏 -->
-  <div id="sidebar">
+  <div id="sidebar" class="collapsed">
     <div id="sidebar-header">
       📍 行程时间轴
     </div>
     <div id="timeline">
       <!-- 由 render_map.py 注入 -->
-      <div class="timeline-divider">1607年</div>
+      <div class="timeline-divider">江南初游</div>
 
 <div class="timeline-item" data-idx="0">
   <div class="tl-num">#1 </div>
   <div class="tl-place">太湖 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1607</div>
+  <div class="tl-time tl-arrive">🕐 万历三十五年（约1607年）</div>
   
-  <span class="tl-badge web">检索</span>
+  
 </div>
-<div class="timeline-divider">1609年</div>
+<div class="timeline-divider">历齐鲁</div>
 
 <div class="timeline-item" data-idx="1">
   <div class="tl-num">#2 </div>
   <div class="tl-place">泰山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1609</div>
+  <div class="tl-time tl-arrive">🕐 万历三十七年（约1609年）</div>
   
-  <span class="tl-badge web">检索</span>
+  
 </div>
-<div class="timeline-divider">1613年</div>
+<div class="timeline-divider">入浙</div>
+
+<div class="timeline-item" data-idx="3">
+  <div class="tl-num">#4 </div>
+  <div class="tl-place">宁波 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十一年（约1613年）</div>
+  
+  
+</div>
 
 <div class="timeline-item" data-idx="4">
   <div class="tl-num">#5 </div>
-  <div class="tl-place">宁波 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1613</div>
+  <div class="tl-place">普陀山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十一年（约1613年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">游天台</div>
 
 <div class="timeline-item" data-idx="5">
   <div class="tl-num">#6 </div>
-  <div class="tl-place">普陀山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1613</div>
+  <div class="tl-place">天台山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十一年三月三十日（1613年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">游雁荡</div>
 
 <div class="timeline-item" data-idx="6">
   <div class="tl-num">#7 </div>
-  <div class="tl-place">天台山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1613</div>
+  <div class="tl-place">雁荡山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十一年（约1613年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">游白岳黄山</div>
 
 <div class="timeline-item" data-idx="7">
   <div class="tl-num">#8 </div>
-  <div class="tl-place">雁荡山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1613</div>
+  <div class="tl-place">白岳 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十四年（约1616年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1616年</div>
 
 <div class="timeline-item" data-idx="8">
-  <div class="tl-num">#9 </div>
-  <div class="tl-place">白岳 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1616</div>
-  
-  <span class="tl-badge web">检索</span>
+  <div class="tl-num">#9 （2次到访）</div>
+  <div class="tl-place">黄山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十四年（约1616年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
+  <div class="tl-chapter">游白岳黄山</div>
 </div>
+<div class="timeline-divider">游武夷</div>
 
 <div class="timeline-item" data-idx="9">
   <div class="tl-num">#10 </div>
-  <div class="tl-place">黄山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1616</div>
+  <div class="tl-place">武夷山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十四年（约1616年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">游庐山</div>
 
 <div class="timeline-item" data-idx="10">
   <div class="tl-num">#11 </div>
-  <div class="tl-place">武夷山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1616</div>
+  <div class="tl-place">庐山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 万历四十六年（约1618年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">游嵩华</div>
 
 <div class="timeline-item" data-idx="11">
   <div class="tl-num">#12 </div>
-  <div class="tl-place">杭州西湖 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1616</div>
+  <div class="tl-place">嵩山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 天启三年（约1623年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1618年</div>
+
+<div class="timeline-item" data-idx="12">
+  <div class="tl-num">#13 </div>
+  <div class="tl-place">华山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 天启三年（约1623年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
+  
+</div>
+<div class="timeline-divider">游太和山</div>
 
 <div class="timeline-item" data-idx="13">
   <div class="tl-num">#14 </div>
-  <div class="tl-place">庐山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1618</div>
+  <div class="tl-place">武当山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 天启三年（约1623年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1620年</div>
+<div class="timeline-divider">游五台恒山</div>
 
 <div class="timeline-item" data-idx="14">
   <div class="tl-num">#15 </div>
-  <div class="tl-place">仙游九鲤湖 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1620</div>
+  <div class="tl-place">五台山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯六年（约1633年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1623年</div>
 
 <div class="timeline-item" data-idx="15">
   <div class="tl-num">#16 </div>
-  <div class="tl-place">嵩山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1623</div>
+  <div class="tl-place">恒山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯六年（约1633年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数日</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">西南大游历·广西</div>
 
 <div class="timeline-item" data-idx="16">
   <div class="tl-num">#17 </div>
-  <div class="tl-place">华山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1623</div>
+  <div class="tl-place">广西 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯十年（约1637年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数月</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-
-<div class="timeline-item" data-idx="17">
-  <div class="tl-num">#18 </div>
-  <div class="tl-place">武当山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1623</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1628年</div>
+<div class="timeline-divider">云南·大理</div>
 
 <div class="timeline-item" data-idx="18">
   <div class="tl-num">#19 </div>
-  <div class="tl-place">福建 <span class="tl-conf conf-single" title="single_source">◎</span></div>
-  <div class="tl-time">1628</div>
+  <div class="tl-place">大理 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯十二年（约1639年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数月</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1629年</div>
+<div class="timeline-divider">云南·丽江</div>
 
 <div class="timeline-item" data-idx="19">
   <div class="tl-num">#20 </div>
-  <div class="tl-place">北京 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1629</div>
+  <div class="tl-place">丽江 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯十二年（约1639年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数月</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
-<div class="timeline-divider">1633年</div>
+<div class="timeline-divider">云南·腾冲</div>
+
+<div class="timeline-item" data-idx="20">
+  <div class="tl-num">#21 </div>
+  <div class="tl-place">腾冲 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯十二年（约1639年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数月</div>
+  
+</div>
+<div class="timeline-divider">云南·昆明病倒</div>
 
 <div class="timeline-item" data-idx="21">
   <div class="tl-num">#22 </div>
-  <div class="tl-place">五台山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1633</div>
+  <div class="tl-place">昆明 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
+  <div class="tl-time tl-arrive">🕐 崇祯十三年（约1640年）</div>
+  <div class="tl-time tl-duration">⏱ 停留 数月</div>
   
-  <span class="tl-badge web">检索</span>
 </div>
+<div class="timeline-divider">返乡病逝</div>
 
 <div class="timeline-item" data-idx="22">
   <div class="tl-num">#23 </div>
-  <div class="tl-place">恒山 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1633</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1637年</div>
-
-<div class="timeline-item" data-idx="26">
-  <div class="tl-num">#27 </div>
-  <div class="tl-place">广西 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1637</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1638年</div>
-
-<div class="timeline-item" data-idx="27">
-  <div class="tl-num">#28 </div>
-  <div class="tl-place">贵州 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1638</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1638-1640年</div>
-
-<div class="timeline-item" data-idx="28">
-  <div class="tl-num">#29 </div>
-  <div class="tl-place">云南 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1638-1640</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1639年</div>
-
-<div class="timeline-item" data-idx="29">
-  <div class="tl-num">#30 </div>
-  <div class="tl-place">大理 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1639</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-
-<div class="timeline-item" data-idx="30">
-  <div class="tl-num">#31 </div>
-  <div class="tl-place">丽江 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1639</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-
-<div class="timeline-item" data-idx="31">
-  <div class="tl-num">#32 </div>
-  <div class="tl-place">腾冲 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1639</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1640年</div>
-
-<div class="timeline-item" data-idx="32">
-  <div class="tl-num">#33 </div>
-  <div class="tl-place">昆明 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1640</div>
-  
-  <span class="tl-badge web">检索</span>
-</div>
-<div class="timeline-divider">1640-1641年</div>
-
-<div class="timeline-item" data-idx="33">
-  <div class="tl-num">#34 </div>
   <div class="tl-place">江阴 <span class="tl-conf conf-confirmed" title="confirmed">✓</span></div>
-  <div class="tl-time">1640-1641</div>
+  <div class="tl-time tl-arrive">🕐 崇祯十四年（约1641年）</div>
   
-  <span class="tl-badge web">检索</span>
+  
 </div>
     </div>
   </div>
+
+  <!-- 时间轴 toggle 按钮（在 sidebar 外，避免 overflow:hidden 裁切）-->
+  <button id="sidebar-toggle-btn" title="展开/收起时间轴">▶ 时间轴</button>
 
   <!-- 地图容器 -->
   <div id="map" style="position:relative;">
@@ -721,24 +784,22 @@ const WAYPOINTS = [
     "place_modern": "太湖，江苏/浙江",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1607",
-    "event": "开始旅游，游太湖，登东西洞庭山",
-    "route_to_next": "solid",
-    "lat": 31.2388806,
-    "lon": 120.1416639,
+    "route_to_next": "straight",
+    "lat": 31.2,
+    "lon": 120.2,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
         "chapter_num": 1,
-        "chapter_title": "1607年",
-        "time_raw": "1607",
-        "time_note": "",
+        "chapter_title": "江南初游",
+        "time_raw": "万历三十五年",
+        "time_note": "约1607年",
         "duration": "",
-        "description": "开始旅游，游太湖，登东西洞庭山",
+        "description": "开始旅游生涯，游太湖，登东西洞庭山",
         "source": "web",
-        "source_sentence": "开始旅游，游太湖，登东西洞庭山"
+        "source_sentence": "万历三十五年，徐霞客初游太湖，登东西洞庭山，由此开启一生游历之旅。"
       }
     ]
   },
@@ -748,24 +809,22 @@ const WAYPOINTS = [
     "place_modern": "山东省泰安市",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1609",
-    "event": "历齐鲁燕冀间，上泰岱",
-    "route_to_next": "solid",
-    "lat": 36.2002968,
-    "lon": 117.0809316,
+    "route_to_next": "straight",
+    "lat": 36.2544,
+    "lon": 117.1009,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
         "chapter_num": 2,
-        "chapter_title": "1609年",
-        "time_raw": "1609",
-        "time_note": "",
+        "chapter_title": "历齐鲁",
+        "time_raw": "万历三十七年",
+        "time_note": "约1609年",
         "duration": "",
-        "description": "历齐鲁燕冀间，上泰岱",
+        "description": "历齐鲁燕冀间，登泰山",
         "source": "web",
-        "source_sentence": "历齐鲁燕冀间，上泰岱"
+        "source_sentence": "万历三十七年，徐霞客历齐鲁燕冀之间，登泰岱，观日出。"
       }
     ]
   },
@@ -775,870 +834,541 @@ const WAYPOINTS = [
     "place_modern": "山东省曲阜市",
     "layer": "transit",
     "confidence": "confirmed",
-    "year": "1609",
-    "event": "拜孔林，谒孟庙三迁故里",
-    "route_to_next": "solid",
-    "lat": 35.5956915,
-    "lon": 116.987543,
+    "route_to_next": "straight",
+    "lat": 35.5963,
+    "lon": 116.9864,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 3,
-        "chapter_title": "1609年",
-        "time_raw": "1609",
-        "time_note": "",
+        "chapter_num": 2,
+        "chapter_title": "历齐鲁",
+        "time_raw": "万历三十七年",
+        "time_note": "约1609年",
         "duration": "",
-        "description": "拜孔林，谒孟庙三迁故里",
+        "description": "拜孔林，谒孟庙，访圣人三迁故里",
         "source": "web",
-        "source_sentence": "拜孔林，谒孟庙三迁故里"
+        "source_sentence": "徐霞客游曲阜，拜孔林，谒孟庙三迁故里。"
       }
     ]
   },
   {
     "order": 4,
-    "place_raw": "峄山",
-    "place_modern": "山东省邹城市峄山",
-    "layer": "transit",
+    "place_raw": "宁波",
+    "place_modern": "浙江省宁波市",
+    "layer": "major",
     "confidence": "confirmed",
-    "year": "1609",
-    "event": "峄山吊枯桐",
-    "route_to_next": "solid",
-    "lat": 35.300251,
-    "lon": 116.9954913,
+    "route_to_next": "straight",
+    "lat": 29.8683,
+    "lon": 121.544,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 4,
-        "chapter_title": "1609年",
-        "time_raw": "1609",
-        "time_note": "",
+        "chapter_num": 3,
+        "chapter_title": "入浙",
+        "time_raw": "万历四十一年",
+        "time_note": "约1613年",
         "duration": "",
-        "description": "峄山吊枯桐",
+        "description": "入浙，从曹娥江独走宁波",
         "source": "web",
-        "source_sentence": "峄山吊枯桐"
+        "source_sentence": "万历四十一年，徐霞客入浙，从曹娥江独走宁波。"
       }
     ]
   },
   {
     "order": 5,
-    "place_raw": "宁波",
-    "place_modern": "浙江省宁波市",
+    "place_raw": "普陀山",
+    "place_modern": "浙江省舟山市普陀山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1613",
-    "event": "入浙，从曹娥江独走宁波",
-    "route_to_next": "solid",
-    "lat": 29.868,
-    "lon": 121.544,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「宁波府」，请核实是否正确。",
+    "route_to_next": "straight",
+    "lat": 29.9728,
+    "lon": 122.3853,
     "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
     "visits": [
       {
-        "chapter_num": 5,
-        "chapter_title": "1613年",
-        "time_raw": "1613",
-        "time_note": "",
-        "duration": "",
-        "description": "入浙，从曹娥江独走宁波",
+        "chapter_num": 3,
+        "chapter_title": "入浙",
+        "time_raw": "万历四十一年",
+        "time_note": "约1613年",
+        "duration": "数日",
+        "description": "渡海游落迦山（普陀山），拜观音道场",
         "source": "web",
-        "source_sentence": "入浙，从曹娥江独走宁波"
+        "source_sentence": "徐霞客渡海游落迦山，即今普陀山，为观音菩萨道场，游览数日。"
       }
     ]
   },
   {
     "order": 6,
-    "place_raw": "普陀山",
-    "place_modern": "浙江省舟山市普陀山",
+    "place_raw": "天台山",
+    "place_modern": "浙江省台州市天台县",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1613",
-    "event": "渡海游落迦山（普陀山）",
-    "route_to_next": "solid",
-    "lat": 30.0112928,
-    "lon": 122.3863158,
+    "route_to_next": "straight",
+    "lat": 29.1429,
+    "lon": 121.0208,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 6,
-        "chapter_title": "1613年",
-        "time_raw": "1613",
-        "time_note": "",
-        "duration": "",
-        "description": "渡海游落迦山（普陀山）",
+        "chapter_num": 3,
+        "chapter_title": "游天台",
+        "time_raw": "万历四十一年三月三十日",
+        "time_note": "1613年",
+        "duration": "数日",
+        "description": "游天台山，《游记》第一卷开篇，攀华顶峰，探石梁飞瀑",
         "source": "web",
-        "source_sentence": "渡海游落迦山（普陀山）"
+        "source_sentence": "癸丑之三月晦，自宁海出西门，云散日朗，人意山光，俱有喜态。"
       }
     ]
   },
   {
     "order": 7,
-    "place_raw": "天台山",
-    "place_modern": "浙江省台州市天台县",
+    "place_raw": "雁荡山",
+    "place_modern": "浙江省温州市雁荡山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1613",
-    "event": "游天台山（游记第一卷开篇3月30日）",
-    "route_to_next": "solid",
-    "lat": 29.1467362,
-    "lon": 121.0024612,
+    "route_to_next": "straight",
+    "lat": 28.3667,
+    "lon": 121.0167,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 7,
-        "chapter_title": "1613年",
-        "time_raw": "1613",
-        "time_note": "",
-        "duration": "",
-        "description": "游天台山（游记第一卷开篇3月30日）",
+        "chapter_num": 3,
+        "chapter_title": "游雁荡",
+        "time_raw": "万历四十一年",
+        "time_note": "约1613年",
+        "duration": "数日",
+        "description": "游雁荡山，观大龙湫瀑布，探灵岩诸胜",
         "source": "web",
-        "source_sentence": "游天台山（游记第一卷开篇3月30日）"
+        "source_sentence": "徐霞客游雁荡山，观大龙湫，登灵岩，叹山水之奇。"
       }
     ]
   },
   {
     "order": 8,
-    "place_raw": "雁荡山",
-    "place_modern": "浙江省温州市雁荡山",
+    "place_raw": "白岳",
+    "place_modern": "安徽省黄山市齐云山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1613",
-    "event": "游雁荡山",
-    "route_to_next": "solid",
-    "lat": 28.3444955,
-    "lon": 121.1478227,
+    "route_to_next": "straight",
+    "lat": 29.7833,
+    "lon": 118.1167,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 8,
-        "chapter_title": "1613年",
-        "time_raw": "1613",
-        "time_note": "",
-        "duration": "",
-        "description": "游雁荡山",
+        "chapter_num": 4,
+        "chapter_title": "游白岳黄山",
+        "time_raw": "万历四十四年",
+        "time_note": "约1616年",
+        "duration": "数日",
+        "description": "游白岳（齐云山），道教名山",
         "source": "web",
-        "source_sentence": "游雁荡山"
+        "source_sentence": "万历四十四年，徐霞客游白岳，即齐云山，为道教圣地。"
       }
     ]
   },
   {
     "order": 9,
-    "place_raw": "白岳",
-    "place_modern": "安徽省黄山市齐云山",
+    "place_raw": "黄山",
+    "place_modern": "安徽省黄山市黄山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1616",
-    "event": "游白岳（齐云山）",
-    "route_to_next": "solid",
-    "lat": 29.8204209,
-    "lon": 118.0456951,
+    "route_to_next": "straight",
+    "lat": 30.1301,
+    "lon": 118.1689,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 9,
-        "chapter_title": "1616年",
-        "time_raw": "1616",
-        "time_note": "",
-        "duration": "",
-        "description": "游白岳（齐云山）",
+        "chapter_num": 4,
+        "chapter_title": "游白岳黄山",
+        "time_raw": "万历四十四年",
+        "time_note": "约1616年",
+        "duration": "数日",
+        "description": "首次游黄山，赞叹「五岳归来不看山，黄山归来不看岳」",
         "source": "web",
-        "source_sentence": "游白岳（齐云山）"
+        "source_sentence": "薄海内外之名山，无如徽之黄山，登黄山，天下无山，观止矣。"
+      },
+      {
+        "chapter_num": 5,
+        "chapter_title": "再游黄山",
+        "time_raw": "万历四十六年",
+        "time_note": "约1618年",
+        "duration": "数日",
+        "description": "再游黄山，深入探察温泉、莲花峰诸胜",
+        "source": "web",
+        "source_sentence": "万历四十六年，徐霞客再游黄山，更深入探察诸峰。"
       }
     ]
   },
   {
     "order": 10,
-    "place_raw": "黄山",
-    "place_modern": "安徽省黄山市黄山",
+    "place_raw": "武夷山",
+    "place_modern": "福建省南平市武夷山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1616",
-    "event": "游黄山（首次）",
-    "route_to_next": "solid",
-    "lat": 30.2841703,
-    "lon": 118.1299559,
+    "route_to_next": "straight",
+    "lat": 27.7333,
+    "lon": 118.0333,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 10,
-        "chapter_title": "1616年",
-        "time_raw": "1616",
-        "time_note": "",
-        "duration": "",
-        "description": "游黄山（首次）",
+        "chapter_num": 4,
+        "chapter_title": "游武夷",
+        "time_raw": "万历四十四年",
+        "time_note": "约1616年",
+        "duration": "数日",
+        "description": "游武夷山、九曲溪，乘竹筏观丹霞地貌",
         "source": "web",
-        "source_sentence": "游黄山（首次）"
+        "source_sentence": "徐霞客游武夷山，泛舟九曲，观悬棺，叹丹山碧水之美。"
       }
     ]
   },
   {
     "order": 11,
-    "place_raw": "武夷山",
-    "place_modern": "福建省南平市武夷山",
+    "place_raw": "庐山",
+    "place_modern": "江西省九江市庐山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1616",
-    "event": "游武夷山、九曲溪",
-    "route_to_next": "solid",
-    "lat": 27.7590448,
-    "lon": 118.0297688,
+    "route_to_next": "straight",
+    "lat": 29.5756,
+    "lon": 115.9925,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 11,
-        "chapter_title": "1616年",
-        "time_raw": "1616",
-        "time_note": "",
-        "duration": "",
-        "description": "游武夷山、九曲溪",
+        "chapter_num": 5,
+        "chapter_title": "游庐山",
+        "time_raw": "万历四十六年",
+        "time_note": "约1618年",
+        "duration": "数日",
+        "description": "游庐山，探三叠泉，观瀑布",
         "source": "web",
-        "source_sentence": "游武夷山、九曲溪"
+        "source_sentence": "徐霞客游庐山，三叠泉之胜，天下第一。"
       }
     ]
   },
   {
     "order": 12,
-    "place_raw": "杭州西湖",
-    "place_modern": "浙江省杭州市西湖",
+    "place_raw": "嵩山",
+    "place_modern": "河南省登封市嵩山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1616",
-    "event": "游杭州西湖",
-    "route_to_next": "solid",
-    "lat": 30.2459837,
-    "lon": 120.1431317,
+    "route_to_next": "straight",
+    "lat": 34.4847,
+    "lon": 112.9625,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 12,
-        "chapter_title": "1616年",
-        "time_raw": "1616",
-        "time_note": "",
-        "duration": "",
-        "description": "游杭州西湖",
+        "chapter_num": 6,
+        "chapter_title": "游嵩华",
+        "time_raw": "天启三年",
+        "time_note": "约1623年",
+        "duration": "数日",
+        "description": "游嵩山，探少林寺，登峻极峰",
         "source": "web",
-        "source_sentence": "游杭州西湖"
+        "source_sentence": "天启三年，徐霞客游嵩山，探少室诸峰，访少林古寺。"
       }
     ]
   },
   {
     "order": 13,
-    "place_raw": "黄山",
-    "place_modern": "安徽省黄山市黄山",
-    "layer": "transit",
+    "place_raw": "华山",
+    "place_modern": "陕西省渭南市华阴市华山",
+    "layer": "major",
     "confidence": "confirmed",
-    "year": "1618",
-    "event": "再游黄山（第二次）",
-    "route_to_next": "solid",
-    "lat": 30.2841703,
-    "lon": 118.1299559,
+    "route_to_next": "straight",
+    "lat": 34.4868,
+    "lon": 110.0877,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 13,
-        "chapter_title": "1618年",
-        "time_raw": "1618",
-        "time_note": "",
-        "duration": "",
-        "description": "再游黄山（第二次）",
+        "chapter_num": 6,
+        "chapter_title": "游嵩华",
+        "time_raw": "天启三年",
+        "time_note": "约1623年",
+        "duration": "数日",
+        "description": "游华山，攀苍龙岭，登南峰绝顶",
         "source": "web",
-        "source_sentence": "再游黄山（第二次）"
+        "source_sentence": "天启三年，徐霞客游华山，自苍龙岭上，至南峰顶，俯瞰关中平原。"
       }
     ]
   },
   {
     "order": 14,
-    "place_raw": "庐山",
-    "place_modern": "江西省九江市庐山",
+    "place_raw": "武当山",
+    "place_modern": "湖北省十堰市武当山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1618",
-    "event": "游庐山",
-    "route_to_next": "solid",
-    "lat": 29.4505923,
-    "lon": 116.0396561,
+    "route_to_next": "straight",
+    "lat": 32.4003,
+    "lon": 111.0042,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 14,
-        "chapter_title": "1618年",
-        "time_raw": "1618",
-        "time_note": "",
-        "duration": "",
-        "description": "游庐山",
+        "chapter_num": 6,
+        "chapter_title": "游太和山",
+        "time_raw": "天启三年",
+        "time_note": "约1623年",
+        "duration": "数日",
+        "description": "游太和山（武当山），朝金顶，观道教建筑群",
         "source": "web",
-        "source_sentence": "游庐山"
+        "source_sentence": "天启三年，徐霞客游太和山，登金顶，道教圣地，宫观雄伟。"
       }
     ]
   },
   {
     "order": 15,
-    "place_raw": "仙游九鲤湖",
-    "place_modern": "福建省莆田市仙游县",
+    "place_raw": "五台山",
+    "place_modern": "山西省忻州市五台山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1620",
-    "event": "游浙江仙游九鲤湖，试钱塘江潮",
-    "route_to_next": "solid",
-    "lat": 25.4559918,
-    "lon": 118.7119163,
+    "route_to_next": "straight",
+    "lat": 38.9575,
+    "lon": 113.5683,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 15,
-        "chapter_title": "1620年",
-        "time_raw": "1620",
-        "time_note": "",
-        "duration": "",
-        "description": "游浙江仙游九鲤湖，试钱塘江潮",
+        "chapter_num": 7,
+        "chapter_title": "游五台恒山",
+        "time_raw": "崇祯六年",
+        "time_note": "约1633年",
+        "duration": "数日",
+        "description": "北上游五台山，佛教圣地，登北台叶斗峰",
         "source": "web",
-        "source_sentence": "游浙江仙游九鲤湖，试钱塘江潮"
+        "source_sentence": "崇祯六年，徐霞客北上游五台山，登北台，为华北最高峰。"
       }
     ]
   },
   {
     "order": 16,
-    "place_raw": "嵩山",
-    "place_modern": "河南省登封市嵩山",
+    "place_raw": "恒山",
+    "place_modern": "山西省大同市浑源县恒山",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1623",
-    "event": "游嵩山（游记第二卷）",
-    "route_to_next": "solid",
-    "lat": 34.467929,
-    "lon": 113.0442636,
+    "route_to_next": "straight",
+    "lat": 39.7,
+    "lon": 113.7333,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 16,
-        "chapter_title": "1623年",
-        "time_raw": "1623",
-        "time_note": "",
-        "duration": "",
-        "description": "游嵩山（游记第二卷）",
+        "chapter_num": 7,
+        "chapter_title": "游五台恒山",
+        "time_raw": "崇祯六年",
+        "time_note": "约1633年",
+        "duration": "数日",
+        "description": "游恒山，悬空寺，北岳之雄",
         "source": "web",
-        "source_sentence": "游嵩山（游记第二卷）"
+        "source_sentence": "崇祯六年，徐霞客游恒山，观悬空寺，叹北岳之险绝。"
       }
     ]
   },
   {
     "order": 17,
-    "place_raw": "华山",
-    "place_modern": "陕西省渭南市华阴市华山",
+    "place_raw": "广西",
+    "place_modern": "广西桂林",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1623",
-    "event": "游华山",
-    "route_to_next": "solid",
-    "lat": 34.5561587,
-    "lon": 110.1350056,
-    "geo_source": "nominatim",
-    "coord_note": "",
+    "route_to_next": "straight",
+    "lat": 25.2736,
+    "lon": 110.29,
     "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "以桂林为代表",
     "visits": [
       {
-        "chapter_num": 17,
-        "chapter_title": "1623年",
-        "time_raw": "1623",
-        "time_note": "",
-        "duration": "",
-        "description": "游华山",
+        "chapter_num": 8,
+        "chapter_title": "西南大游历·广西",
+        "time_raw": "崇祯十年",
+        "time_note": "约1637年",
+        "duration": "数月",
+        "description": "游广西桂林、阳朔等地，探察溶洞与喀斯特地貌",
         "source": "web",
-        "source_sentence": "游华山"
+        "source_sentence": "崇祯十年，徐霞客入广西，游桂林诸山，深入探察石灰岩溶洞。"
       }
     ]
   },
   {
     "order": 18,
-    "place_raw": "武当山",
-    "place_modern": "湖北省十堰市武当山",
-    "layer": "major",
+    "place_raw": "贵州",
+    "place_modern": "贵州贵阳",
+    "layer": "transit",
     "confidence": "confirmed",
-    "year": "1623",
-    "event": "游太和山（武当山）",
-    "route_to_next": "solid",
-    "lat": 32.4007606,
-    "lon": 111.0044504,
-    "geo_source": "nominatim",
-    "coord_note": "",
+    "route_to_next": "straight",
+    "lat": 26.6477,
+    "lon": 106.6298,
     "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "以贵阳为代表",
     "visits": [
       {
-        "chapter_num": 18,
-        "chapter_title": "1623年",
-        "time_raw": "1623",
-        "time_note": "",
-        "duration": "",
-        "description": "游太和山（武当山）",
+        "chapter_num": 9,
+        "chapter_title": "西南大游历·贵州",
+        "time_raw": "崇祯十一年",
+        "time_note": "约1638年",
+        "duration": "数月",
+        "description": "经贵州入云南，探察盘江、黄果树一带地貌",
         "source": "web",
-        "source_sentence": "游太和山（武当山）"
+        "source_sentence": "崇祯十一年，徐霞客经贵州西行，探察盘江河谷，继续西进云南。"
       }
     ]
   },
   {
     "order": 19,
-    "place_raw": "福建",
-    "place_modern": "福建省",
+    "place_raw": "大理",
+    "place_modern": "云南省大理市",
     "layer": "major",
-    "confidence": "single_source",
-    "year": "1628",
-    "event": "游福建",
-    "route_to_next": "solid",
-    "lat": 26.193218,
-    "lon": 118.2208721,
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 25.6065,
+    "lon": 100.2676,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 19,
-        "chapter_title": "1628年",
-        "time_raw": "1628",
-        "time_note": "",
-        "duration": "",
-        "description": "游福建",
+        "chapter_num": 10,
+        "chapter_title": "云南·大理",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "深入大理探察苍山洱海，为当地土司木氏接待",
         "source": "web",
-        "source_sentence": "游福建"
+        "source_sentence": "崇祯十二年，徐霞客至大理，探苍山十八溪，泛舟洱海，受木氏土司盛情款待。"
       }
     ]
   },
   {
     "order": 20,
-    "place_raw": "北京",
-    "place_modern": "北京市",
+    "place_raw": "丽江",
+    "place_modern": "云南省丽江市",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1629",
-    "event": "游北京",
-    "route_to_next": "solid",
-    "lat": 39.9042,
-    "lon": 116.4074,
-    "geo_source": "ancient",
-    "coord_note": "",
+    "route_to_next": "straight",
+    "lat": 26.8721,
+    "lon": 100.2299,
     "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "",
     "visits": [
       {
-        "chapter_num": 20,
-        "chapter_title": "1629年",
-        "time_raw": "1629",
-        "time_note": "",
-        "duration": "",
-        "description": "游北京",
+        "chapter_num": 10,
+        "chapter_title": "云南·丽江",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "游丽江，受木氏土司木增接待，探察玉龙雪山",
         "source": "web",
-        "source_sentence": "游北京"
+        "source_sentence": "崇祯十二年，徐霞客游丽江，木氏土司木增以礼相待，资助其继续西行。"
       }
     ]
   },
   {
     "order": 21,
-    "place_raw": "盘山",
-    "place_modern": "天津市蓟州区盘山",
-    "layer": "transit",
+    "place_raw": "腾冲",
+    "place_modern": "云南省保山市腾冲市",
+    "layer": "major",
     "confidence": "confirmed",
-    "year": "1629",
-    "event": "游天津蓟县盘山",
-    "route_to_next": "solid",
-    "lat": 40.0570491,
-    "lon": 117.2787451,
+    "route_to_next": "straight",
+    "lat": 25.0204,
+    "lon": 98.4944,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 21,
-        "chapter_title": "1629年",
-        "time_raw": "1629",
-        "time_note": "",
-        "duration": "",
-        "description": "游天津蓟县盘山",
+        "chapter_num": 11,
+        "chapter_title": "云南·腾冲",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "抵腾冲，中国西南极边之地，探察火山地热",
         "source": "web",
-        "source_sentence": "游天津蓟县盘山"
+        "source_sentence": "崇祯十二年，徐霞客至腾冲，为其西行最远点，探察火山热海奇观。"
       }
     ]
   },
   {
     "order": 22,
-    "place_raw": "五台山",
-    "place_modern": "山西省忻州市五台山",
+    "place_raw": "昆明",
+    "place_modern": "云南省昆明市",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1633",
-    "event": "北上游五台山",
-    "route_to_next": "solid",
-    "lat": 38.9421207,
-    "lon": 113.6277294,
+    "route_to_next": "straight",
+    "lat": 25.0389,
+    "lon": 102.7183,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 22,
-        "chapter_title": "1633年",
-        "time_raw": "1633",
-        "time_note": "",
-        "duration": "",
-        "description": "北上游五台山",
+        "chapter_num": 12,
+        "chapter_title": "云南·昆明病倒",
+        "time_raw": "崇祯十三年",
+        "time_note": "约1640年",
+        "duration": "数月",
+        "description": "在昆明积劳成疾，双足不能行走，由知府安排护送返乡",
         "source": "web",
-        "source_sentence": "北上游五台山"
+        "source_sentence": "崇祯十三年，徐霞客在昆明病倒，足疾加剧，无力继续游历，由云南巡抚安排轿夫送返故乡。"
       }
     ]
   },
   {
     "order": 23,
-    "place_raw": "恒山",
-    "place_modern": "山西省大同市浑源县恒山",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1633",
-    "event": "游恒山",
-    "route_to_next": "solid",
-    "lat": 39.652188,
-    "lon": 113.7121499,
-    "geo_source": "nominatim",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 23,
-        "chapter_title": "1633年",
-        "time_raw": "1633",
-        "time_note": "",
-        "duration": "",
-        "description": "游恒山",
-        "source": "web",
-        "source_sentence": "游恒山"
-      }
-    ]
-  },
-  {
-    "order": 24,
-    "place_raw": "浙江",
-    "place_modern": "浙江省",
-    "layer": "transit",
-    "confidence": "confirmed",
-    "year": "1636",
-    "event": "放舟赴浙江（西南大游历起点）",
-    "route_to_next": "solid",
-    "lat": 30.274,
-    "lon": 120.155,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「浙江承宣布政使司」，请核实是否正确。",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 24,
-        "chapter_title": "1636年",
-        "time_raw": "1636",
-        "time_note": "",
-        "duration": "",
-        "description": "放舟赴浙江（西南大游历起点）",
-        "source": "web",
-        "source_sentence": "放舟赴浙江（西南大游历起点）"
-      }
-    ]
-  },
-  {
-    "order": 25,
-    "place_raw": "江西",
-    "place_modern": "江西省",
-    "layer": "transit",
-    "confidence": "confirmed",
-    "year": "1636",
-    "event": "经江西西行",
-    "route_to_next": "solid",
-    "lat": 28.682,
-    "lon": 115.858,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「江西承宣布政使司」，请核实是否正确。",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 25,
-        "chapter_title": "1636年",
-        "time_raw": "1636",
-        "time_note": "",
-        "duration": "",
-        "description": "经江西西行",
-        "source": "web",
-        "source_sentence": "经江西西行"
-      }
-    ]
-  },
-  {
-    "order": 26,
-    "place_raw": "湖南",
-    "place_modern": "湖南省",
-    "layer": "transit",
-    "confidence": "confirmed",
-    "year": "1636-1637",
-    "event": "经湖南入广西",
-    "route_to_next": "solid",
-    "lat": 27.6662087,
-    "lon": 111.7487063,
-    "geo_source": "nominatim",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 26,
-        "chapter_title": "1636-1637年",
-        "time_raw": "1636-1637",
-        "time_note": "",
-        "duration": "",
-        "description": "经湖南入广西",
-        "source": "web",
-        "source_sentence": "经湖南入广西"
-      }
-    ]
-  },
-  {
-    "order": 27,
-    "place_raw": "广西",
-    "place_modern": "广西壮族自治区",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1637",
-    "event": "游广西（游记第3-8卷）",
-    "route_to_next": "solid",
-    "lat": 24.532,
-    "lon": 103.763,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「广西府」，请核实是否正确。云南广西府，非广西省",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 27,
-        "chapter_title": "1637年",
-        "time_raw": "1637",
-        "time_note": "",
-        "duration": "",
-        "description": "游广西（游记第3-8卷）",
-        "source": "web",
-        "source_sentence": "游广西（游记第3-8卷）"
-      }
-    ]
-  },
-  {
-    "order": 28,
-    "place_raw": "贵州",
-    "place_modern": "贵州省",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1638",
-    "event": "经贵州入云南（游记第9-12卷）",
-    "route_to_next": "solid",
-    "lat": 27.0,
-    "lon": 107.0,
-    "geo_source": "nominatim",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 28,
-        "chapter_title": "1638年",
-        "time_raw": "1638",
-        "time_note": "",
-        "duration": "",
-        "description": "经贵州入云南（游记第9-12卷）",
-        "source": "web",
-        "source_sentence": "经贵州入云南（游记第9-12卷）"
-      }
-    ]
-  },
-  {
-    "order": 29,
-    "place_raw": "云南",
-    "place_modern": "云南省",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1638-1640",
-    "event": "四年云南深度游（游记第13-19卷）",
-    "route_to_next": "solid",
-    "lat": 25.0,
-    "lon": 102.0,
-    "geo_source": "nominatim",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 29,
-        "chapter_title": "1638-1640年",
-        "time_raw": "1638-1640",
-        "time_note": "",
-        "duration": "",
-        "description": "四年云南深度游（游记第13-19卷）",
-        "source": "web",
-        "source_sentence": "四年云南深度游（游记第13-19卷）"
-      }
-    ]
-  },
-  {
-    "order": 30,
-    "place_raw": "大理",
-    "place_modern": "云南省大理市",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1639",
-    "event": "深入大理探察苍山洱海",
-    "route_to_next": "solid",
-    "lat": 25.6065,
-    "lon": 100.2676,
-    "geo_source": "ancient",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 30,
-        "chapter_title": "1639年",
-        "time_raw": "1639",
-        "time_note": "",
-        "duration": "",
-        "description": "深入大理探察苍山洱海",
-        "source": "web",
-        "source_sentence": "深入大理探察苍山洱海"
-      }
-    ]
-  },
-  {
-    "order": 31,
-    "place_raw": "丽江",
-    "place_modern": "云南省丽江市",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1639",
-    "event": "游丽江（木氏土司接待）",
-    "route_to_next": "solid",
-    "lat": 26.8721,
-    "lon": 100.233,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「丽江府」，请核实是否正确。",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 31,
-        "chapter_title": "1639年",
-        "time_raw": "1639",
-        "time_note": "",
-        "duration": "",
-        "description": "游丽江（木氏土司接待）",
-        "source": "web",
-        "source_sentence": "游丽江（木氏土司接待）"
-      }
-    ]
-  },
-  {
-    "order": 32,
-    "place_raw": "腾冲",
-    "place_modern": "云南省保山市腾冲市",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1639",
-    "event": "最西端：游腾冲（极边之地）",
-    "route_to_next": "dashed",
-    "lat": 25.1725265,
-    "lon": 98.5168272,
-    "geo_source": "nominatim",
-    "coord_note": "",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 32,
-        "chapter_title": "1639年",
-        "time_raw": "1639",
-        "time_note": "",
-        "duration": "",
-        "description": "最西端：游腾冲（极边之地）",
-        "source": "web",
-        "source_sentence": "最西端：游腾冲（极边之地）"
-      }
-    ]
-  },
-  {
-    "order": 33,
-    "place_raw": "昆明",
-    "place_modern": "云南省昆明市",
-    "layer": "major",
-    "confidence": "confirmed",
-    "year": "1640",
-    "event": "在云南昆明得病，双足不能行走",
-    "route_to_next": "solid",
-    "lat": 25.0389,
-    "lon": 102.7183,
-    "geo_source": "ancient_fuzzy",
-    "coord_note": "模糊匹配到「昆明府」，请核实是否正确。明清云南布政司治所",
-    "resolved": true,
-    "visits": [
-      {
-        "chapter_num": 33,
-        "chapter_title": "1640年",
-        "time_raw": "1640",
-        "time_note": "",
-        "duration": "",
-        "description": "在云南昆明得病，双足不能行走",
-        "source": "web",
-        "source_sentence": "在云南昆明得病，双足不能行走"
-      }
-    ]
-  },
-  {
-    "order": 34,
     "place_raw": "江阴",
     "place_modern": "江苏省江阴市",
     "layer": "major",
     "confidence": "confirmed",
-    "year": "1640-1641",
-    "event": "由知府用轿子送返江阴，回到故乡病逝",
-    "route_to_next": null,
-    "lat": 31.9215518,
-    "lon": 120.2808847,
+    "route_to_next": "straight",
+    "lat": 31.9208,
+    "lon": 120.2853,
+    "resolved": true,
     "geo_source": "nominatim",
     "coord_note": "",
-    "resolved": true,
     "visits": [
       {
-        "chapter_num": 34,
-        "chapter_title": "1640-1641年",
-        "time_raw": "1640-1641",
-        "time_note": "",
+        "chapter_num": 13,
+        "chapter_title": "返乡病逝",
+        "time_raw": "崇祯十四年",
+        "time_note": "约1641年",
         "duration": "",
-        "description": "由知府用轿子送返江阴，回到故乡病逝",
+        "description": "被轿夫送返故乡江阴，数月后病逝，终年五十四岁",
         "source": "web",
-        "source_sentence": "由知府用轿子送返江阴，回到故乡病逝"
+        "source_sentence": "崇祯十四年，徐霞客返江阴故里，是年正月卒，年五十四。"
       }
     ]
   }
 ];
-const MAP_CENTER = [30.674865576470584, 114.13200716470588];
+const MAP_CENTER = [30.610130434782608, 113.51464347826087];
 const MAP_ZOOM = 4;
-const USE_CLUSTER = true;
+const USE_CLUSTER = false;
 const USE_STAGES = true;
-const STAGES_DATA = [{"label": "1607年", "indices": [0]}, {"label": "1609年", "indices": [1, 2, 3]}, {"label": "1613年", "indices": [4, 5, 6, 7]}, {"label": "1616年", "indices": [8, 9, 10, 11]}, {"label": "1618年", "indices": [12, 13]}, {"label": "1620年", "indices": [14]}, {"label": "1623年", "indices": [15, 16, 17]}, {"label": "1628年", "indices": [18]}, {"label": "1629年", "indices": [19, 20]}, {"label": "1633年", "indices": [21, 22]}, {"label": "1636年", "indices": [23, 24]}, {"label": "1636-1637年", "indices": [25]}, {"label": "1637年", "indices": [26]}, {"label": "1638年", "indices": [27]}, {"label": "1638-1640年", "indices": [28]}, {"label": "1639年", "indices": [29, 30, 31]}, {"label": "1640年", "indices": [32]}, {"label": "1640-1641年", "indices": [33]}];
+const STAGES_DATA = [{"label": "江南初游", "indices": [0]}, {"label": "历齐鲁", "indices": [1, 2]}, {"label": "入浙", "indices": [3, 4]}, {"label": "游天台", "indices": [5]}, {"label": "游雁荡", "indices": [6]}, {"label": "游白岳黄山", "indices": [7, 8]}, {"label": "游武夷", "indices": [9]}, {"label": "游庐山", "indices": [10]}, {"label": "游嵩华", "indices": [11, 12]}, {"label": "游太和山", "indices": [13]}, {"label": "游五台恒山", "indices": [14, 15]}, {"label": "西南大游历·广西", "indices": [16]}, {"label": "西南大游历·贵州", "indices": [17]}, {"label": "云南·大理", "indices": [18]}, {"label": "云南·丽江", "indices": [19]}, {"label": "云南·腾冲", "indices": [20]}, {"label": "云南·昆明病倒", "indices": [21]}, {"label": "返乡病逝", "indices": [22]}];
 
 // ── 初始化地图 ──
 const map = L.map('map', {
@@ -1647,11 +1377,32 @@ const map = L.map('map', {
   zoomControl: true,
 });
 
-// 底图：OpenStreetMap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// 底图：OSM 优先，国内访问失败时自动兜底换高德
+const osmTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 18,
-}).addTo(map);
+  subdomains: 'abc',
+});
+
+const gaodeTile = L.tileLayer(
+  'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+  {
+    attribution: '© <a href="https://www.amap.com/">高德地图</a>',
+    maxZoom: 18,
+    subdomains: '1234',
+  }
+);
+
+let gaodeFallbackTriggered = false;
+osmTile.on('tileerror', function() {
+  if (gaodeFallbackTriggered) return;
+  gaodeFallbackTriggered = true;
+  map.removeLayer(osmTile);
+  gaodeTile.addTo(map);
+  console.info('[senderos] OSM 瓦片加载失败，已切换至高德地图底图');
+});
+
+osmTile.addTo(map);
 
 // ── 图标定义 ──
 function makeIcon(color, size, opacity, badge) {
@@ -1682,12 +1433,12 @@ function makeIcon(color, size, opacity, badge) {
 }
 
 const ICONS = {
-  major_confirmed:     makeIcon('#c0703a', 20),          // 深橙，多源确认
-  major_single:        makeIcon('#d4803a', 20),          // 橙色，单一来源
-  major_inferred:      makeIcon('#d4b040', 20, 1, '?'),  // 金色+?，推测
-  major_disputed:      makeIcon('#c04020', 20, 1, '!'),  // 红橙+!，存在矛盾
-  transit:             makeIcon('#6080a0', 13),
-  transit_inferred:    makeIcon('#a0a060', 13, 0.8),
+  major_confirmed:     makeIcon('#c0703a', 12),          // 深橙，多源确认
+  major_single:        makeIcon('#d4803a', 12),          // 橙色，单一来源
+  major_inferred:      makeIcon('#d4b040', 12, 1, '?'),  // 金色+?，推测
+  major_disputed:      makeIcon('#c04020', 12, 1, '!'),  // 红橙+!，存在矛盾
+  transit:             makeIcon('#6080a0', 7),
+  transit_inferred:    makeIcon('#a0a060', 7, 0.8),
 };
 
 function getIcon(wp) {
@@ -1701,14 +1452,7 @@ function getIcon(wp) {
 
 // ── 来源徽章 HTML ──
 function sourceBadge(source) {
-  const map = {
-    'pdf':        ['source-pdf', '📄 PDF资料'],
-    'user-pdf':   ['source-user-pdf', '📎 用户提供'],
-    'web':        ['source-web', '🌐 网络检索'],
-    'inferred':   ['source-inferred', '💭 推测'],
-  };
-  const [cls, label] = map[source] || ['source-web', source];
-  return `<span class="visit-source-badge ${cls}">${label}</span>`;
+  return '';
 }
 
 // ── 置信度标注 ──
@@ -1735,9 +1479,9 @@ function buildPopup(wp) {
         ${wp.place_modern !== wp.place_raw ? `（${wp.place_modern}）` : ''}
         <br>
         ${v.chapter_title ? `<span style="color:#4a6080;font-size:11px;">📖 ${v.chapter_title}</span><br>` : ''}
-        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 ${v.time_raw}</span><br>` : ''}
+        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 到达：${v.time_raw}${v.time_note ? `（${v.time_note}）` : ''}</span><br>` : ''}
+        ${v.duration ? `<span style="color:#5a4030;font-size:11px;">⏱ 停留：${v.duration}</span><br>` : ''}
         <span style="font-size:11px;color:#806050;">途经</span>
-        ${sourceBadge(v.source || 'web')}
       </div>
     `;
   }
@@ -1748,12 +1492,11 @@ function buildPopup(wp) {
   wp.visits.forEach((v, i) => {
     visitsHtml += `
       <div class="visit-block">
-        <div class="visit-num">第${i+1}次到访</div>
+        ${wp.visits.length > 1 ? `<div class="visit-num">第${i+1}次到访</div>` : ''}
         ${v.chapter_title ? `<div class="visit-chapter">📖 ${v.chapter_title}</div>` : ''}
-        ${v.time_raw ? `<div class="visit-time">🕐 ${v.time_raw}${v.time_note ? `<span style="color:#a08060;font-size:10px;">（${v.time_note}）</span>` : ''}</div>` : ''}
+        ${v.time_raw ? `<div class="visit-time">🕐 到达：${v.time_raw}${v.time_note ? `<span style="color:#a08060;font-size:10px;">（${v.time_note}）</span>` : ''}</div>` : ''}
         ${v.duration ? `<div class="visit-time">⏱ 停留：${v.duration}</div>` : ''}
-        <div class="visit-desc">${v.description}</div>
-        ${sourceBadge(v.source || 'web')}
+        ${v.description ? `<div class="visit-desc">${v.description}</div>` : ''}
         ${v.verification_status === 'sentence_not_found' ? '<span style="font-size:10px;color:#c03010;margin-left:4px;">⚠️ 原文句未找到</span>' : ''}
       </div>
     `;
@@ -1780,7 +1523,7 @@ let seqTimer     = null;
 let seqPaused    = false;
 let seqReady     = false;   // 重置后等待用户触发
 
-const ANT_OPTIONS_SOLID = {
+const ANT_OPTIONS = {
   delay: 1500,
   weight: 2.5,
   color: '#1a6fd4',
@@ -1790,27 +1533,13 @@ const ANT_OPTIONS_SOLID = {
   paused: false,
   reverse: false,
 };
-const ANT_OPTIONS_DASHED = {
-  delay: 1500,
-  weight: 1.5,
-  color: '#9b30d0',
-  pulseColor: '#ffffff',
-  opacity: 0.55,
-  dashArray: [6, 20],
-  paused: false,
-  reverse: false,
-};
 
 function getValidWps(waypoints) {
   return waypoints.filter(wp => wp.lat && wp.lon);
 }
 
 function makeAntSeg(a, b) {
-  const isDashed = (a.route_to_next === 'dashed')
-    || (a.visits && a.visits[0]?.source === 'inferred')
-    || (b.visits && b.visits[0]?.source === 'inferred');
-  const opts = isDashed ? { ...ANT_OPTIONS_DASHED } : { ...ANT_OPTIONS_SOLID };
-  return L.polyline.antPath([[a.lat, a.lon], [b.lat, b.lon]], opts);
+  return L.polyline.antPath([[a.lat, a.lon], [b.lat, b.lon]], { ...ANT_OPTIONS });
 }
 
 // 清空所有路线图层
@@ -1851,11 +1580,10 @@ function seqReset(waypoints) {
 function seqStart(waypoints) {
   seqReady  = false;
   seqPaused = false;
-  const wps = getValidWps(waypoints);
+  const wps   = getValidWps(waypoints);
   const total = wps.length - 1;
 
   if (seqIndex >= total) {
-    // 已全部显示，重置后重播
     seqReset(waypoints);
     setTimeout(() => seqStart(waypoints), 100);
     return;
@@ -1874,24 +1602,28 @@ function seqStart(waypoints) {
     seqIndex++;
     updateSeqProgress(waypoints);
     updateSeqButtons();
-  }, 600);
+    // 自适应视图：已点亮节点全部纳入视野
+    const visiblePts = wps.slice(0, seqIndex + 1)
+      .filter(wp => wp.lat && wp.lon)
+      .map(wp => [wp.lat, wp.lon]);
+    if (visiblePts.length >= 2) {
+      map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.4 });
+    }
+  }, 800);
 
   updateSeqButtons();
 }
 
 function seqPauseToggle(waypoints) {
   if (!seqTimer && !seqPaused && !seqReady) {
-    // 还没开始，启动
     seqStart(waypoints);
     return;
   }
   if (seqTimer) {
-    // 正在播放 → 暂停
     clearInterval(seqTimer);
     seqTimer  = null;
     seqPaused = true;
   } else if (seqPaused) {
-    // 已暂停 → 继续
     seqPaused = false;
     seqStart(waypoints);
   }
@@ -1918,6 +1650,13 @@ function seqJumpTo(waypointIdx, waypoints) {
   seqPaused = true;   // 暂停，等用户选择继续
   updateSeqProgress(waypoints);
   updateSeqButtons();
+  // ── 自适应视图：将已显示的所有节点纳入视野 ──
+  const visiblePts = wps.slice(0, drawTo + 1)
+    .filter(wp => wp.lat && wp.lon)
+    .map(wp => [wp.lat, wp.lon]);
+  if (visiblePts.length >= 2) {
+    map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.6 });
+  }
 }
 
 function updateSeqProgress(waypoints) {
@@ -2027,48 +1766,123 @@ function initStageSwitcher() {
   if (!USE_STAGES || !STAGES_DATA || STAGES_DATA.length === 0) return;
 
   const switcher = document.getElementById('stage-switcher');
-  switcher.style.display = 'flex';
+  switcher.style.display = 'block';
 
-  // 「全部」按钮
+  // ── toggle 胶囊按钮 ──
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'stage-toggle-btn';
+  toggleBtn.title = '展开/收起章节筛选';
+  switcher.appendChild(toggleBtn);
+  switcher.classList.add('collapsed');
+
+  function updateToggleLabel() {
+    const collapsed = switcher.classList.contains('collapsed');
+    toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
+  }
+  toggleBtn.addEventListener('click', () => {
+    switcher.classList.toggle('collapsed');
+    updateToggleLabel();
+  });
+  updateToggleLabel();
+
+  // ── 筛选面板 ──
+  const panel = document.createElement('div');
+  panel.id = 'stage-panel';
+
+  // 「从」标签 + select
+  const fromLabel = document.createElement('label');
+  fromLabel.textContent = '从';
+  const fromSel = document.createElement('select');
+  fromSel.id = 'stage-from-sel';
+
+  // 「到」标签 + select
+  const toLabel = document.createElement('label');
+  toLabel.textContent = '到';
+  const toSel = document.createElement('select');
+  toSel.id = 'stage-to-sel';
+
+  // 填充选项
+  STAGES_DATA.forEach((stage, si) => {
+    const optF = document.createElement('option');
+    optF.value = si;
+    optF.textContent = stage.label;
+    fromSel.appendChild(optF);
+
+    const optT = document.createElement('option');
+    optT.value = si;
+    optT.textContent = stage.label;
+    toSel.appendChild(optT);
+  });
+  toSel.value = STAGES_DATA.length - 1;  // 默认「到」=最后一章
+
+  // 「从」变更时，「到」不能早于「从」
+  fromSel.addEventListener('change', () => {
+    const f = parseInt(fromSel.value);
+    if (parseInt(toSel.value) < f) toSel.value = f;
+    Array.from(toSel.options).forEach(opt => {
+      opt.disabled = parseInt(opt.value) < f;
+    });
+  });
+
+  // 应用按钮
+  const applyBtn = document.createElement('button');
+  applyBtn.id = 'stage-apply-btn';
+  applyBtn.textContent = '应用';
+  applyBtn.addEventListener('click', () => {
+    const f = parseInt(fromSel.value);
+    const t = parseInt(toSel.value);
+    showStageRange(f, t);
+    updateRangeLabel(f, t);
+  });
+
+  // 全部按钮
   const allBtn = document.createElement('button');
-  allBtn.className = 'stage-btn all active';
+  allBtn.id = 'stage-all-btn';
   allBtn.textContent = '全部';
   allBtn.addEventListener('click', () => {
     showAllMarkers();
-    setActiveStageBtn(allBtn);
+    updateRangeLabel(-1, -1);
   });
-  switcher.appendChild(allBtn);
 
-  // 各阶段按钮
-  STAGES_DATA.forEach((stage, si) => {
-    const btn = document.createElement('button');
-    btn.className = 'stage-btn';
-    btn.textContent = stage.label;
-    btn.addEventListener('click', () => {
-      showStageMarkers(stage.indices);
-      setActiveStageBtn(btn);
-    });
-    switcher.appendChild(btn);
-  });
-}
+  // 当前范围提示
+  const rangeLabel = document.createElement('span');
+  rangeLabel.id = 'stage-range-label';
 
-function setActiveStageBtn(activeBtn) {
-  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
-  activeBtn.classList.add('active');
-}
-
-function showAllMarkers() {
-  Object.values(markers).forEach(m => {
-    if (USE_CLUSTER) {
-      if (!clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
+  function updateRangeLabel(f, t) {
+    if (f < 0) {
+      rangeLabel.textContent = '（全部）';
+      toggleBtn.textContent = '▸ 章节';
+      // 若收起则更新 toggle 文字
+      if (!switcher.classList.contains('collapsed')) toggleBtn.textContent = '▾ 章节';
     } else {
-      if (!map.hasLayer(m)) m.addTo(map);
+      const fl = STAGES_DATA[f].label;
+      const tl = STAGES_DATA[t].label;
+      const text = f === t ? fl : `${fl} → ${tl}`;
+      rangeLabel.textContent = `（${text}）`;
     }
-  });
+  }
+  updateRangeLabel(-1, -1);
+
+  panel.appendChild(fromLabel);
+  panel.appendChild(fromSel);
+  panel.appendChild(toLabel);
+  panel.appendChild(toSel);
+  panel.appendChild(applyBtn);
+  panel.appendChild(allBtn);
+  panel.appendChild(rangeLabel);
+  switcher.appendChild(panel);
 }
 
-function showStageMarkers(indices) {
-  const idxSet = new Set(indices);
+function setActiveStageBtn() {} // 保留空函数，避免旧调用报错
+
+// 显示从第 fromStageIdx 到 toStageIdx 章节（含）的所有 waypoint
+function showStageRange(fromSI, toSI) {
+  const idxSet = new Set();
+  for (let si = fromSI; si <= toSI; si++) {
+    STAGES_DATA[si].indices.forEach(i => idxSet.add(i));
+  }
+  activeWaypoints = WAYPOINTS.filter((_, i) => idxSet.has(i));
+
   Object.entries(markers).forEach(([idx, m]) => {
     const show = idxSet.has(parseInt(idx));
     if (USE_CLUSTER) {
@@ -2079,85 +1893,122 @@ function showStageMarkers(indices) {
       if (!show && map.hasLayer(m)) map.removeLayer(m);
     }
   });
-  // 自动缩放到该阶段
-  const pts = indices
-    .filter(i => WAYPOINTS[i] && WAYPOINTS[i].lat && WAYPOINTS[i].lon)
-    .map(i => [WAYPOINTS[i].lat, WAYPOINTS[i].lon]);
+
+  if (routeMode === 'seq') {
+    seqReset(activeWaypoints);
+    seqStart(activeWaypoints);
+  } else {
+    drawAll(activeWaypoints);
+  }
+
+  const pts = activeWaypoints
+    .filter(wp => wp.lat && wp.lon)
+    .map(wp => [wp.lat, wp.lon]);
   if (pts.length > 0) {
     map.fitBounds(pts, { padding: [40, 40], maxZoom: 10 });
+  }
+}
+
+function showAllMarkers() {
+  activeWaypoints = WAYPOINTS;
+  Object.values(markers).forEach(m => {
+    if (USE_CLUSTER) {
+      if (!clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
+    } else {
+      if (!map.hasLayer(m)) m.addTo(map);
+    }
+  });
+  // 重绘路线（按当前路线模式）
+  if (routeMode === 'seq') {
+    seqReset(activeWaypoints);
+    seqStart(activeWaypoints);
+  } else {
+    drawAll(activeWaypoints);
   }
 }
 
 // ── 图例 ──
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function() {
-  const div = L.DomUtil.create('div', 'legend');
+  const div = L.DomUtil.create('div', 'legend collapsed');
   div.innerHTML = `
-    <div class="legend-title">图例</div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#c0703a;"></div>
-      主要节点（多源确认）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#d4803a;"></div>
-      主要节点（单一来源）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#d4b040;"></div>
-      主要节点（推测 ?）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#c04020;"></div>
-      主要节点（存在矛盾 !）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
-      途经点
-    </div>
-    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px;">
-    <div class="legend-item">
-      <div class="legend-line" style="background:#1a6fd4;"></div>
-      有记载路线
-    </div>
-    <div class="legend-item">
-      <div class="legend-line dashed"></div>
-      推测路径（直线）
-    </div>
-    </div>
-    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px; font-size:11px; color:#806040;">
-      <div>📄 PDF资料  📎 用户提供</div>
-      <div>🌐 网络检索  💭 推测</div>
+    <button class="legend-toggle-btn" id="legend-toggle-btn">
+      图例<span class="legend-title-arrow">▾</span>
+    </button>
+    <div class="legend-body">
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#c0703a;"></div>
+        主要节点（多源确认）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#d4803a;"></div>
+        主要节点（单一来源）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#d4b040;"></div>
+        主要节点（推测 ?）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#c04020;"></div>
+        主要节点（存在矛盾 !）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
+        途经点
+      </div>
     </div>
   `;
+  L.DomEvent.disableClickPropagation(div);
+  div.querySelector('#legend-toggle-btn').addEventListener('click', () => {
+    div.classList.toggle('collapsed');
+  });
   return div;
 };
 legend.addTo(map);
 
 // ── 执行绘制 ──
+let activeWaypoints = WAYPOINTS;  // 当前激活的 waypoint 子集（章节过滤后）
+
 drawRoutes(WAYPOINTS);
 drawMarkers(WAYPOINTS);
 initStageSwitcher();
 
 // ── 路线模式切换按钮绑定 ──
 document.getElementById('btn-mode-all').addEventListener('click', () => {
-  setRouteMode('all', WAYPOINTS);
+  setRouteMode('all', activeWaypoints);
 });
 document.getElementById('btn-mode-seq').addEventListener('click', () => {
-  setRouteMode('seq', WAYPOINTS);
+  setRouteMode('seq', activeWaypoints);
 });
 document.getElementById('btn-seq-pause').addEventListener('click', () => {
-  seqPauseToggle(WAYPOINTS);
+  seqPauseToggle(activeWaypoints);
 });
 document.getElementById('btn-seq-reset').addEventListener('click', () => {
-  seqReset(WAYPOINTS);
+  seqReset(activeWaypoints);
 });
+
+// ── 时间轴侧边栏 toggle ──
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebar-toggle-btn');
+  function updateBtn() {
+    const collapsed = sidebar.classList.contains('collapsed');
+    btn.textContent = collapsed ? '▶ 时间轴' : '◀ 时间轴';
+    btn.style.left = collapsed ? '0' : '280px';
+  }
+  btn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    updateBtn();
+  });
+  updateBtn();
+})();
 
 // ── 时间轴事件绑定 ──
 document.querySelectorAll('.timeline-item').forEach(el => {
   el.addEventListener('click', () => {
     const idx = parseInt(el.dataset.idx);
     flyToWaypoint(idx);
-    seqJumpTo(idx, WAYPOINTS);  // 依次模式联动
+    seqJumpTo(idx, activeWaypoints);  // 依次模式联动，感知章节过滤
   });
 });
 
