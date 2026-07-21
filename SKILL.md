@@ -7,62 +7,12 @@ description: |
   (B) 人物检索模式 — 用户指定人物（历史或现代），可辅以 PDF 资料，AI 主动检索行程信息后绘图。
   地图特性：OpenStreetMap 底图、两层图钉（主要节点/途经点）、实线/虚线路径区分已知与推测、图钉 Popup 显示章节来源+时间+描述、左侧时间轴侧边栏。
   触发词：「画路线」「绘制行程」「画地图」「旅行轨迹」「路线图」「route map」「travel route」「行程地图」「人物路线」。
-  安装触发词：「安装这个skill」「帮我安装」「install this skill」，后接 GitHub 链接时，执行 ## 安装流程 中的步骤。
 ---
 
 # 路线绘图师（Route Mapper）
 
 > 将游记、传记、人物行程转化为可交互的地理路线图。
 > 核心输出：一个在浏览器中打开的 HTML 文件，内嵌 OpenStreetMap 底图、分层图钉、实线/虚线路径、时间轴侧边栏。
-
----
-
-## 安装流程
-
-当用户说「帮我安装这个 skill: <GitHub URL>」时，执行以下步骤：
-
-### Step 1：确认安装目录
-
-全局 skill 目录为 `~/.config/codewiz/skills/`，skill 名称取自仓库名（即 URL 最后一段）：
-
-```bash
-SKILL_NAME=$(basename <GitHub URL> .git)   # → senderos
-SKILL_DIR="$HOME/.config/codewiz/skills/$SKILL_NAME"
-```
-
-若目录已存在，询问用户是否覆盖更新（`git pull`）还是跳过。
-
-### Step 2：克隆仓库
-
-```bash
-git clone <GitHub URL> ~/.config/codewiz/skills/$SKILL_NAME
-```
-
-克隆完成后，验证 `SKILL.md` 存在：
-
-```bash
-ls ~/.config/codewiz/skills/$SKILL_NAME/SKILL.md
-```
-
-### Step 3：安装 Python 依赖（若存在 requirements.txt）
-
-```bash
-# senderos 无 requirements.txt，依赖列表硬编码如下
-pip install ebooklib beautifulsoup4 mobi --break-system-packages 2>/dev/null \
-  || pip install ebooklib beautifulsoup4 mobi
-```
-
-### Step 4：验证并报告
-
-```bash
-python ~/.config/codewiz/skills/$SKILL_NAME/scripts/geocode.py 撒马尔罕
-```
-
-输出结果正常则告知用户：
-> ✅ skill「senderos」已安装至 `~/.config/codewiz/skills/senderos`
-> 请重启 Codewiz 后生效。触发词：「画路线」「绘制行程」「画地图」
-
----
 
 ---
 
