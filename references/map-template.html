@@ -1025,6 +1025,7 @@ function setActiveStageBtn(activeBtn) {
 }
 
 function showAllMarkers() {
+  activeWaypoints = WAYPOINTS;
   Object.values(markers).forEach(m => {
     if (USE_CLUSTER) {
       if (!clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
@@ -1032,10 +1033,20 @@ function showAllMarkers() {
       if (!map.hasLayer(m)) m.addTo(map);
     }
   });
+  // 重绘路线（按当前路线模式）
+  if (routeMode === 'seq') {
+    seqReset(activeWaypoints);
+    seqStart(activeWaypoints);
+  } else {
+    drawAll(activeWaypoints);
+  }
 }
 
 function showStageMarkers(indices) {
   const idxSet = new Set(indices);
+  // 更新激活的 waypoint 子集（保持原始顺序）
+  activeWaypoints = WAYPOINTS.filter((_, i) => idxSet.has(i));
+
   Object.entries(markers).forEach(([idx, m]) => {
     const show = idxSet.has(parseInt(idx));
     if (USE_CLUSTER) {
@@ -1046,10 +1057,19 @@ function showStageMarkers(indices) {
       if (!show && map.hasLayer(m)) map.removeLayer(m);
     }
   });
+
+  // 重绘路线（按当前路线模式，仅在激活点之间）
+  if (routeMode === 'seq') {
+    seqReset(activeWaypoints);
+    seqStart(activeWaypoints);
+  } else {
+    drawAll(activeWaypoints);
+  }
+
   // 自动缩放到该阶段
-  const pts = indices
-    .filter(i => WAYPOINTS[i] && WAYPOINTS[i].lat && WAYPOINTS[i].lon)
-    .map(i => [WAYPOINTS[i].lat, WAYPOINTS[i].lon]);
+  const pts = activeWaypoints
+    .filter(wp => wp.lat && wp.lon)
+    .map(wp => [wp.lat, wp.lon]);
   if (pts.length > 0) {
     map.fitBounds(pts, { padding: [40, 40], maxZoom: 10 });
   }
@@ -1095,22 +1115,24 @@ legend.onAdd = function() {
 legend.addTo(map);
 
 // ── 执行绘制 ──
+let activeWaypoints = WAYPOINTS;  // 当前激活的 waypoint 子集（章节过滤后）
+
 drawRoutes(WAYPOINTS);
 drawMarkers(WAYPOINTS);
 initStageSwitcher();
 
 // ── 路线模式切换按钮绑定 ──
 document.getElementById('btn-mode-all').addEventListener('click', () => {
-  setRouteMode('all', WAYPOINTS);
+  setRouteMode('all', activeWaypoints);
 });
 document.getElementById('btn-mode-seq').addEventListener('click', () => {
-  setRouteMode('seq', WAYPOINTS);
+  setRouteMode('seq', activeWaypoints);
 });
 document.getElementById('btn-seq-pause').addEventListener('click', () => {
-  seqPauseToggle(WAYPOINTS);
+  seqPauseToggle(activeWaypoints);
 });
 document.getElementById('btn-seq-reset').addEventListener('click', () => {
-  seqReset(WAYPOINTS);
+  seqReset(activeWaypoints);
 });
 
 // ── 时间轴侧边栏 toggle ──
@@ -1134,7 +1156,7 @@ document.querySelectorAll('.timeline-item').forEach(el => {
   el.addEventListener('click', () => {
     const idx = parseInt(el.dataset.idx);
     flyToWaypoint(idx);
-    seqJumpTo(idx, WAYPOINTS);  // 依次模式联动
+    seqJumpTo(idx, activeWaypoints);  // 依次模式联动，感知章节过滤
   });
 });
 
