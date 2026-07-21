@@ -186,6 +186,29 @@
   }
 
   /* ── 图例 ── */
+
+  /* 图层控件标题「地图类型」*/
+  .leaflet-control-layers {
+    border: 1px solid #c4b090 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+  .layer-control-title {
+    display: none; /* 折叠时隐藏 */
+    padding: 6px 10px 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5a3e1b;
+    border-bottom: 1px solid #e0d0b0;
+    letter-spacing: 0.05em;
+  }
+  .leaflet-control-layers-expanded .layer-control-title {
+    display: block;
+  }
+  .leaflet-control-layers-expanded {
+    padding-top: 0 !important;
+  }
+
   .legend {
     background: rgba(250, 246, 238, 0.95);
     border: 1px solid #c4b090;
@@ -603,7 +626,7 @@ const map = L.map('map', {
   zoomControl: true,
 });
 
-// ── 底图：Esri 图层（无需 API key，全球覆盖）──
+// ── 底图：Esri 图层（无需 API key，全球覆盖）+ 高德矢量 ──
 function esriLayer(service, attribution) {
   return L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/'
@@ -623,43 +646,74 @@ const satellite = esriLayer('World_Imagery',
   '© <a href="https://www.esri.com/">Esri</a>, Earthstar Geographics');
 const street    = esriLayer('World_Street_Map');
 const relief    = esriLayer('World_Shaded_Relief');
-const osmLayer  = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+const gaode = L.tileLayer(
+  'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+  {
+    maxZoom: 18,
+    subdomains: '1234',
+    attribution: '© <a href="https://www.amap.com/">高德地图</a>',
+  }
+);
+
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 18,
   subdomains: 'abc',
 });
 
-// 地名注记叠加层（Esri，可叠加在任意底图上）
-const label = esriLayer('Reference/World_Boundaries_and_Places',
-  '© <a href="https://www.esri.com/">Esri</a>');
+// 中文地名注记：OSM 叠加层（有中文，网络好时加载，失败时底图依然可用）
+const osmLabel = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18,
+  subdomains: 'abc',
+  opacity: 0.7,
+});
 
-// 默认加载：国家地理风格 + 地名注记
+// 不需要注记的底图名称集合（自带注记或不适合叠加）
+const NO_LABEL_BASES = new Set(['🗺 高德地图', '🌐 OSM']);
+
+// 默认加载：国家地理底图 + OSM 中文注记叠加
 natgeo.addTo(map);
-label.addTo(map);
+osmLabel.addTo(map);
 
-// 切换底图时：OSM 自带注记，移除 Esri 注记；其余底图保持注记叠加
+// 切换底图时联动注记层
 map.on('baselayerchange', function(e) {
-  if (e.name === '🌐 OSM') {
-    map.removeLayer(label);
+  if (NO_LABEL_BASES.has(e.name)) {
+    // 高德/OSM 自带中文注记，移除叠加层避免重叠
+    map.removeLayer(osmLabel);
   } else {
-    if (!map.hasLayer(label)) label.addTo(map);
+    // Esri 底图叠加 OSM 中文注记
+    if (!map.hasLayer(osmLabel)) osmLabel.addTo(map);
   }
 });
 
-// 图层控件（右上角，折叠式）
-L.control.layers(
+// 图层控件（右上角，折叠式，标题「地图类型」）
+const layerControl = L.control.layers(
   {
     '🌿 国家地理': natgeo,
     '🛰 卫星影像': satellite,
     '🗺 矢量地图': street,
     '🏔 地形晕渲': relief,
+    '🗺 高德地图': gaode,
     '🌐 OSM':      osmLayer,
   },
   {
-    '📍 地名注记': label,
+    '📍 中文地名': osmLabel,
   },
   { position: 'topright', collapsed: true }
 ).addTo(map);
+
+// 将控件标题改为「地图类型」
+(function() {
+  const el = layerControl.getContainer();
+  // Leaflet 图层控件的 toggle 按钮是 .leaflet-control-layers-toggle
+  // 展开后的标题区无内置 DOM，在容器顶部插入标题
+  const title = document.createElement('div');
+  title.className = 'layer-control-title';
+  title.textContent = '地图类型';
+  el.insertBefore(title, el.firstChild);
+})();
 
 // ── 图标定义 ──
 function makeIcon(color, size, opacity, badge) {
