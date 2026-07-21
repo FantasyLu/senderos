@@ -195,14 +195,6 @@
   .legend-line {
     width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px;
   }
-  .legend-line.dashed {
-    background: repeating-linear-gradient(
-      to right,
-      #9b30d0 0px, #9b30d0 5px,
-      transparent 5px, transparent 9px
-    );
-    height: 2px;
-  }
 
   /* ── Popup 样式 ── */
   .custom-popup .leaflet-popup-content-wrapper {
@@ -2009,7 +2001,7 @@ let seqTimer     = null;
 let seqPaused    = false;
 let seqReady     = false;   // 重置后等待用户触发
 
-const ANT_OPTIONS_SOLID = {
+const ANT_OPTIONS = {
   delay: 1500,
   weight: 2.5,
   color: '#1a6fd4',
@@ -2019,27 +2011,13 @@ const ANT_OPTIONS_SOLID = {
   paused: false,
   reverse: false,
 };
-const ANT_OPTIONS_DASHED = {
-  delay: 1500,
-  weight: 1.5,
-  color: '#9b30d0',
-  pulseColor: '#ffffff',
-  opacity: 0.55,
-  dashArray: [6, 20],
-  paused: false,
-  reverse: false,
-};
 
 function getValidWps(waypoints) {
   return waypoints.filter(wp => wp.lat && wp.lon);
 }
 
 function makeAntSeg(a, b) {
-  const isDashed = (a.route_to_next === 'dashed')
-    || (a.visits && a.visits[0]?.source === 'inferred')
-    || (b.visits && b.visits[0]?.source === 'inferred');
-  const opts = isDashed ? { ...ANT_OPTIONS_DASHED } : { ...ANT_OPTIONS_SOLID };
-  return L.polyline.antPath([[a.lat, a.lon], [b.lat, b.lon]], opts);
+  return L.polyline.antPath([[a.lat, a.lon], [b.lat, b.lon]], { ...ANT_OPTIONS });
 }
 
 // 清空所有路线图层
@@ -2363,19 +2341,6 @@ legend.onAdd = function() {
     <div class="legend-item">
       <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
       途经点
-    </div>
-    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px;">
-    <div class="legend-item">
-      <div class="legend-line" style="background:#1a6fd4;"></div>
-      有记载路线
-    </div>
-    <div class="legend-item">
-      <div class="legend-line dashed"></div>
-      推测路径（直线）
-    </div>
-    </div>
-    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px; font-size:11px; color:#806040;">
-      <div>💭 推测路线以虚线标注</div>
     </div>
   `;
   return div;
