@@ -47,12 +47,71 @@ import os
 import re
 import math
 import argparse
+import urllib.request
 from pathlib import Path
 from datetime import datetime
 
 SKILL_DIR = Path(__file__).parent.parent
 TEMPLATE_FILE = SKILL_DIR / "references" / "map-template.html"
+VENDOR_DIR = SKILL_DIR / "references" / "vendor"
 OUTPUT_DIR = SKILL_DIR / "output"
+
+# vendor 文件清单：本地文件名 → jsdelivr URL
+VENDOR_FILES = {
+    "css": [
+        ("leaflet.css",                "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"),
+        ("MarkerCluster.css",          "https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"),
+        ("MarkerCluster.Default.css",  "https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"),
+    ],
+    "js": [
+        ("leaflet.js",                 "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"),
+        ("leaflet.markercluster.js",   "https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"),
+        ("leaflet-ant-path.js",        "https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"),
+    ],
+}
+
+
+def _ensure_vendor() -> tuple[str, str]:
+    """
+    确保 vendor/ 目录下的 JS/CSS 文件存在。
+    若缺失，从 jsdelivr 自动下载并缓存到本地。
+    返回 (vendor_css_html, vendor_js_html) 供内联注入。
+    """
+    VENDOR_DIR.mkdir(parents=True, exist_ok=True)
+
+    all_files = VENDOR_FILES["css"] + VENDOR_FILES["js"]
+    missing = [(name, url) for name, url in all_files if not (VENDOR_DIR / name).exists()]
+
+    if missing:
+        print(f"   📦 首次使用，正在下载 {len(missing)} 个 vendor 文件（仅需一次）...")
+        for name, url in missing:
+            dest = VENDOR_DIR / name
+            print(f"      ↓ {name}", end="", flush=True)
+            try:
+                with urllib.request.urlopen(url, timeout=30) as resp:
+                    dest.write_bytes(resp.read())
+                print(" ✓")
+            except Exception as e:
+                print(f" ✗ 下载失败: {e}")
+                raise RuntimeError(
+                    f"无法下载 {name}，请检查网络连接后重试，或手动下载至 {VENDOR_DIR}"
+                ) from e
+        print("   📦 vendor 文件下载完成，后续渲染无需再次下载。")
+
+    # 读取并组装内联 HTML
+    css_parts = []
+    for name, _ in VENDOR_FILES["css"]:
+        content = (VENDOR_DIR / name).read_text(encoding="utf-8")
+        css_parts.append(f"<style>/* {name} */\n{content}\n</style>")
+    vendor_css = "\n".join(css_parts)
+
+    js_parts = []
+    for name, _ in VENDOR_FILES["js"]:
+        content = (VENDOR_DIR / name).read_text(encoding="utf-8")
+        js_parts.append(f"<script>/* {name} */\n{content}\n</script>")
+    vendor_js = "\n".join(js_parts)
+
+    return vendor_css, vendor_js
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -226,6 +285,9 @@ def render(
 
     template = TEMPLATE_FILE.read_text(encoding="utf-8")
 
+    # 确保 vendor JS/CSS 存在并内联
+    vendor_css, vendor_js = _ensure_vendor()
+
     # major_only 过滤
     render_wps = waypoints
     if major_only:
@@ -279,6 +341,8 @@ def render(
 
     # 替换模板占位符
     replacements = {
+        "{{VENDOR_CSS}}": vendor_css,
+        "{{VENDOR_JS}}": vendor_js,
         "{{TITLE}}": title,
         "{{SUBTITLE}}": subtitle,
         "{{MAJOR_COUNT}}": str(major_count),

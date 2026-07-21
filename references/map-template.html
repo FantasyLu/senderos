@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{TITLE}}</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+{{VENDOR_CSS}}
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -586,10 +584,8 @@
 
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-<script src="https://unpkg.com/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+<!-- Leaflet JS（由 render_map.py 内联） -->
+{{VENDOR_JS}}
 
 <script>
 // ── 数据（由 render_map.py 注入）──
@@ -607,13 +603,7 @@ const map = L.map('map', {
   zoomControl: true,
 });
 
-// 底图：OSM 优先，国内访问失败时自动兜底换高德
-const osmTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 18,
-  subdomains: 'abc',
-});
-
+// 底图：高德优先（国内可用），境外访问失败时自动兜底换 OSM
 const gaodeTile = L.tileLayer(
   'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
   {
@@ -623,16 +613,22 @@ const gaodeTile = L.tileLayer(
   }
 );
 
-let gaodeFallbackTriggered = false;
-osmTile.on('tileerror', function() {
-  if (gaodeFallbackTriggered) return;
-  gaodeFallbackTriggered = true;
-  map.removeLayer(osmTile);
-  gaodeTile.addTo(map);
-  console.info('[senderos] OSM 瓦片加载失败，已切换至高德地图底图');
+const osmTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18,
+  subdomains: 'abc',
 });
 
-osmTile.addTo(map);
+let osmFallbackTriggered = false;
+gaodeTile.on('tileerror', function() {
+  if (osmFallbackTriggered) return;
+  osmFallbackTriggered = true;
+  map.removeLayer(gaodeTile);
+  osmTile.addTo(map);
+  console.info('[senderos] 高德瓦片加载失败，已切换至 OSM 底图');
+});
+
+gaodeTile.addTo(map);
 
 // ── 图标定义 ──
 function makeIcon(color, size, opacity, badge) {

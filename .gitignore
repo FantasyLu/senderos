@@ -1,6 +1,9 @@
 # output/ 目录为本地生成产物，完整示例已保存在 examples/ 中
 output/
 
+# vendor/ 为本地 JS/CSS 缓存，首次运行 render_map.py 时自动下载
+references/vendor/
+
 # Python
 __pycache__/
 *.py[cod]
