@@ -171,7 +171,17 @@ def _build_timeline_html(waypoints: list[dict]) -> str:
         if wp.get("place_modern") and wp["place_modern"] != place_display:
             place_display = f"{wp['place_raw']}"
 
-        time_display = first_visit.get("time_raw", "")
+        time_raw  = first_visit.get("time_raw", "")
+        time_note = first_visit.get("time_note", "")
+        duration  = first_visit.get("duration", "")
+
+        # 组合时间显示：原文时间（换算注释）
+        time_parts = []
+        if time_raw:
+            time_parts.append(time_raw + (f"（{time_note}）" if time_note else ""))
+        if duration:
+            time_parts.append(f"停留 {duration}")
+        time_display = "　".join(time_parts)  # 全角空格分隔
 
         unresolved_note = "" if wp.get("resolved") else ' <span style="color:#c05030;">⚠️坐标待确认</span>'
 
@@ -235,9 +245,9 @@ def render(
             wp["visits"] = [{
                 "chapter_num":     wp.get("order", 0),
                 "chapter_title":   chapter_title,
-                "time_raw":        year_text,
-                "time_note":       "",
-                "duration":        "",
+                "time_raw":        wp.get("time_raw", year_text),
+                "time_note":       wp.get("time_note", ""),
+                "duration":        wp.get("duration", ""),
                 "description":     event_text,
                 "source":          source,
                 "source_sentence": wp.get("source_sentence", event_text),

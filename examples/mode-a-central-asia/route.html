@@ -2016,7 +2016,8 @@ function buildPopup(wp) {
         ${wp.place_modern !== wp.place_raw ? `（${wp.place_modern}）` : ''}
         <br>
         ${v.chapter_title ? `<span style="color:#4a6080;font-size:11px;">📖 ${v.chapter_title}</span><br>` : ''}
-        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 ${v.time_raw}</span><br>` : ''}
+        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 ${v.time_raw}${v.time_note ? `（${v.time_note}）` : ''}</span><br>` : ''}
+        ${v.duration ? `<span style="color:#5a4030;font-size:11px;">⏱ 停留：${v.duration}</span><br>` : ''}
         <span style="font-size:11px;color:#806050;">途经</span>
         ${sourceBadge(v.source || 'web')}
       </div>
