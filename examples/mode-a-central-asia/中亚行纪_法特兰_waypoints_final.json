@@ -6,11 +6,11 @@
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 40.2526,
-    "lon": 58.4396,
+    "lat": 40.2522,
+    "lon": 58.4397,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "Darvaza gas crater 精确坐标：40.2522, 58.4397",
     "visits": [
       {
         "chapter_num": 2,
@@ -56,11 +56,11 @@
     "layer": "transit",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 40.1152,
-    "lon": 59.8616,
+    "lat": 39.5,
+    "lon": 60.0,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "卡拉库姆沙漠腹地，阿什哈巴德与马雷之间约中点",
     "visits": [
       {
         "chapter_num": 6,
@@ -181,11 +181,11 @@
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 45.0,
-    "lon": 59.5,
+    "lat": 44.9544,
+    "lon": 59.6744,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "咸海南部区域（莫依纳克废弃渔船墓地附近）：44.9544, 59.6744",
     "visits": [
       {
         "chapter_num": 13,
@@ -202,15 +202,15 @@
   {
     "order": 9,
     "place_raw": "图尔科巴斯",
-    "place_modern": "Turtkul, Kazakhstan",
+    "place_modern": "Turtkul, Uzbekistan",
     "layer": "major",
     "confidence": "single_source",
     "route_to_next": "straight",
-    "lat": 43.55,
-    "lon": 61.0,
+    "lat": 41.5583,
+    "lon": 61.0072,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "推测位置，靠近阿克苏-热巴格雷国家公园",
+    "coord_note": "Turtkul（图尔科巴斯），乌兹别克斯坦卡拉卡尔帕克斯坦：41.5583, 61.0072",
     "visits": [
       {
         "chapter_num": 15,
@@ -531,11 +531,11 @@
     "layer": "transit",
     "confidence": "single_source",
     "route_to_next": "straight",
-    "lat": 37.677,
-    "lon": 62.193,
+    "lat": 37.6589,
+    "lon": 62.1826,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "古梅尔夫遗址（Sultan Kala）精确坐标：37.6589, 62.1826",
     "visits": [
       {
         "chapter_num": 8,

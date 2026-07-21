@@ -1,6 +1,31 @@
 [
   {
     "order": 1,
+    "place_raw": "江阴故里",
+    "place_modern": "江苏省江阴市",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 31.9208,
+    "lon": 120.2853,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "江阴市区，徐霞客故居所在地",
+    "visits": [
+      {
+        "chapter_num": 0,
+        "chapter_title": "出发地",
+        "time_raw": "万历三十五年",
+        "time_note": "约1607年",
+        "duration": "",
+        "description": "出生并成长于江阴，22岁开始游历生涯，一生多次由此出发",
+        "source": "web",
+        "source_sentence": "徐霞客，名弘祖，字振之，号霞客，江苏江阴人，生于万历十四年（1587年）。"
+      }
+    ]
+  },
+  {
+    "order": 2,
     "place_raw": "太湖",
     "place_modern": "太湖，江苏/浙江",
     "layer": "major",
@@ -10,7 +35,7 @@
     "lon": 120.2,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "太湖中心坐标",
     "visits": [
       {
         "chapter_num": 1,
@@ -25,7 +50,7 @@
     ]
   },
   {
-    "order": 2,
+    "order": 3,
     "place_raw": "泰山",
     "place_modern": "山东省泰安市",
     "layer": "major",
@@ -35,7 +60,7 @@
     "lon": 117.1009,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "泰山玉皇顶：36.2544, 117.1009",
     "visits": [
       {
         "chapter_num": 2,
@@ -43,14 +68,14 @@
         "time_raw": "万历三十七年",
         "time_note": "约1609年",
         "duration": "",
-        "description": "历齐鲁燕冀间，登泰山",
+        "description": "历齐鲁燕冀间，登泰山，观日出云海",
         "source": "web",
         "source_sentence": "万历三十七年，徐霞客历齐鲁燕冀之间，登泰岱，观日出。"
       }
     ]
   },
   {
-    "order": 3,
+    "order": 4,
     "place_raw": "曲阜",
     "place_modern": "山东省曲阜市",
     "layer": "transit",
@@ -60,7 +85,7 @@
     "lon": 116.9864,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "曲阜孔庙：35.5963, 116.9864",
     "visits": [
       {
         "chapter_num": 2,
@@ -75,17 +100,42 @@
     ]
   },
   {
-    "order": 4,
+    "order": 5,
+    "place_raw": "峄山",
+    "place_modern": "山东省邹城市峄山",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 35.2167,
+    "lon": 116.9833,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "峄山：35.2167, 116.9833",
+    "visits": [
+      {
+        "chapter_num": 2,
+        "chapter_title": "历齐鲁",
+        "time_raw": "万历三十七年",
+        "time_note": "约1609年",
+        "duration": "",
+        "description": "游峄山，吊枯桐，峄山为秦始皇刻石之地",
+        "source": "web",
+        "source_sentence": "徐霞客游峄山，吊枯桐，峄山有秦代刻石，历史悠久。"
+      }
+    ]
+  },
+  {
+    "order": 6,
     "place_raw": "宁波",
     "place_modern": "浙江省宁波市",
-    "layer": "major",
+    "layer": "transit",
     "confidence": "confirmed",
     "route_to_next": "straight",
     "lat": 29.8683,
     "lon": 121.544,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "宁波市区",
     "visits": [
       {
         "chapter_num": 3,
@@ -93,14 +143,14 @@
         "time_raw": "万历四十一年",
         "time_note": "约1613年",
         "duration": "",
-        "description": "入浙，从曹娥江独走宁波",
+        "description": "入浙，从曹娥江独走宁波，为普陀之行的中转",
         "source": "web",
         "source_sentence": "万历四十一年，徐霞客入浙，从曹娥江独走宁波。"
       }
     ]
   },
   {
-    "order": 5,
+    "order": 7,
     "place_raw": "普陀山",
     "place_modern": "浙江省舟山市普陀山",
     "layer": "major",
@@ -110,22 +160,22 @@
     "lon": 122.3853,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "普陀山观音道场：29.9728, 122.3853",
     "visits": [
       {
         "chapter_num": 3,
-        "chapter_title": "入浙",
+        "chapter_title": "游普陀",
         "time_raw": "万历四十一年",
         "time_note": "约1613年",
         "duration": "数日",
-        "description": "渡海游落迦山（普陀山），拜观音道场",
+        "description": "渡海游落迦山（普陀山），拜观音道场，《游记》有专章记录",
         "source": "web",
         "source_sentence": "徐霞客渡海游落迦山，即今普陀山，为观音菩萨道场，游览数日。"
       }
     ]
   },
   {
-    "order": 6,
+    "order": 8,
     "place_raw": "天台山",
     "place_modern": "浙江省台州市天台县",
     "layer": "major",
@@ -135,13 +185,13 @@
     "lon": 121.0208,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "天台山华顶峰：29.1429, 121.0208",
     "visits": [
       {
         "chapter_num": 3,
         "chapter_title": "游天台",
         "time_raw": "万历四十一年三月三十日",
-        "time_note": "1613年",
+        "time_note": "1613年5月",
         "duration": "数日",
         "description": "游天台山，《游记》第一卷开篇，攀华顶峰，探石梁飞瀑",
         "source": "web",
@@ -150,7 +200,7 @@
     ]
   },
   {
-    "order": 7,
+    "order": 9,
     "place_raw": "雁荡山",
     "place_modern": "浙江省温州市雁荡山",
     "layer": "major",
@@ -160,7 +210,7 @@
     "lon": 121.0167,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "雁荡山大龙湫：28.3667, 121.0167",
     "visits": [
       {
         "chapter_num": 3,
@@ -175,32 +225,57 @@
     ]
   },
   {
-    "order": 8,
-    "place_raw": "白岳",
-    "place_modern": "安徽省黄山市齐云山",
+    "order": 10,
+    "place_raw": "仙游九鲤湖",
+    "place_modern": "福建省莆田市仙游县",
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 29.7833,
-    "lon": 118.1167,
+    "lat": 25.3728,
+    "lon": 118.6633,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "九鲤湖景区：25.3728, 118.6633",
     "visits": [
       {
         "chapter_num": 4,
-        "chapter_title": "游白岳黄山",
+        "chapter_title": "游仙游九鲤湖",
+        "time_raw": "万历四十八年",
+        "time_note": "约1620年",
+        "duration": "数日",
+        "description": "游仙游九鲤湖，观九级瀑布，试钱塘江潮",
+        "source": "web",
+        "source_sentence": "徐霞客游浙江仙游九鲤湖，九级飞瀑，壮阔非凡，试钱塘江观潮。"
+      }
+    ]
+  },
+  {
+    "order": 11,
+    "place_raw": "白岳",
+    "place_modern": "安徽省黄山市休宁县齐云山",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 29.7961,
+    "lon": 118.1347,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "齐云山景区：29.7961, 118.1347",
+    "visits": [
+      {
+        "chapter_num": 5,
+        "chapter_title": "游白岳",
         "time_raw": "万历四十四年",
         "time_note": "约1616年",
         "duration": "数日",
-        "description": "游白岳（齐云山），道教名山",
+        "description": "游白岳（齐云山），道教圣地，奇峰峭壁，丹霞地貌",
         "source": "web",
         "source_sentence": "万历四十四年，徐霞客游白岳，即齐云山，为道教圣地。"
       }
     ]
   },
   {
-    "order": 9,
+    "order": 12,
     "place_raw": "黄山",
     "place_modern": "安徽省黄山市黄山",
     "layer": "major",
@@ -210,32 +285,32 @@
     "lon": 118.1689,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "黄山莲花峰：30.1301, 118.1689",
     "visits": [
       {
-        "chapter_num": 4,
+        "chapter_num": 5,
         "chapter_title": "游白岳黄山",
         "time_raw": "万历四十四年",
         "time_note": "约1616年",
         "duration": "数日",
-        "description": "首次游黄山，赞叹「五岳归来不看山，黄山归来不看岳」",
+        "description": "首次游黄山，登莲花峰，赞叹「五岳归来不看山，黄山归来不看岳」",
         "source": "web",
         "source_sentence": "薄海内外之名山，无如徽之黄山，登黄山，天下无山，观止矣。"
       },
       {
-        "chapter_num": 5,
+        "chapter_num": 6,
         "chapter_title": "再游黄山",
         "time_raw": "万历四十六年",
         "time_note": "约1618年",
         "duration": "数日",
-        "description": "再游黄山，深入探察温泉、莲花峰诸胜",
+        "description": "再游黄山，深入探察温泉、天都峰、文殊院诸胜",
         "source": "web",
         "source_sentence": "万历四十六年，徐霞客再游黄山，更深入探察诸峰。"
       }
     ]
   },
   {
-    "order": 10,
+    "order": 13,
     "place_raw": "武夷山",
     "place_modern": "福建省南平市武夷山",
     "layer": "major",
@@ -245,22 +320,47 @@
     "lon": 118.0333,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "武夷山天游峰：27.7333, 118.0333",
     "visits": [
       {
-        "chapter_num": 4,
+        "chapter_num": 5,
         "chapter_title": "游武夷",
         "time_raw": "万历四十四年",
         "time_note": "约1616年",
         "duration": "数日",
-        "description": "游武夷山、九曲溪，乘竹筏观丹霞地貌",
+        "description": "游武夷山、九曲溪，乘竹筏观丹霞地貌，探访悬棺遗址",
         "source": "web",
         "source_sentence": "徐霞客游武夷山，泛舟九曲，观悬棺，叹丹山碧水之美。"
       }
     ]
   },
   {
-    "order": 11,
+    "order": 14,
+    "place_raw": "杭州西湖",
+    "place_modern": "浙江省杭州市西湖",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 30.2463,
+    "lon": 120.1501,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "西湖断桥：30.2463, 120.1501",
+    "visits": [
+      {
+        "chapter_num": 5,
+        "chapter_title": "游杭州西湖",
+        "time_raw": "万历四十四年",
+        "time_note": "约1616年",
+        "duration": "数日",
+        "description": "游杭州西湖，赏苏堤春晓，访灵隐寺",
+        "source": "web",
+        "source_sentence": "徐霞客游杭州西湖，览湖山之胜，访灵隐古刹。"
+      }
+    ]
+  },
+  {
+    "order": 15,
     "place_raw": "庐山",
     "place_modern": "江西省九江市庐山",
     "layer": "major",
@@ -270,22 +370,22 @@
     "lon": 115.9925,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "庐山三叠泉：29.5756, 115.9925",
     "visits": [
       {
-        "chapter_num": 5,
+        "chapter_num": 6,
         "chapter_title": "游庐山",
         "time_raw": "万历四十六年",
         "time_note": "约1618年",
         "duration": "数日",
-        "description": "游庐山，探三叠泉，观瀑布",
+        "description": "游庐山，探三叠泉，登汉阳峰，观山间云海",
         "source": "web",
         "source_sentence": "徐霞客游庐山，三叠泉之胜，天下第一。"
       }
     ]
   },
   {
-    "order": 12,
+    "order": 16,
     "place_raw": "嵩山",
     "place_modern": "河南省登封市嵩山",
     "layer": "major",
@@ -295,22 +395,22 @@
     "lon": 112.9625,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "嵩山峻极峰：34.4847, 112.9625",
     "visits": [
       {
-        "chapter_num": 6,
-        "chapter_title": "游嵩华",
+        "chapter_num": 7,
+        "chapter_title": "游嵩山",
         "time_raw": "天启三年",
         "time_note": "约1623年",
         "duration": "数日",
-        "description": "游嵩山，探少林寺，登峻极峰",
+        "description": "游嵩山，探少林寺，登峻极峰，访中岳庙",
         "source": "web",
         "source_sentence": "天启三年，徐霞客游嵩山，探少室诸峰，访少林古寺。"
       }
     ]
   },
   {
-    "order": 13,
+    "order": 17,
     "place_raw": "华山",
     "place_modern": "陕西省渭南市华阴市华山",
     "layer": "major",
@@ -320,22 +420,22 @@
     "lon": 110.0877,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "华山南峰：34.4868, 110.0877",
     "visits": [
       {
-        "chapter_num": 6,
-        "chapter_title": "游嵩华",
+        "chapter_num": 7,
+        "chapter_title": "游华山",
         "time_raw": "天启三年",
         "time_note": "约1623年",
         "duration": "数日",
-        "description": "游华山，攀苍龙岭，登南峰绝顶",
+        "description": "游华山，攀苍龙岭，登南峰绝顶，俯瞰关中平原",
         "source": "web",
         "source_sentence": "天启三年，徐霞客游华山，自苍龙岭上，至南峰顶，俯瞰关中平原。"
       }
     ]
   },
   {
-    "order": 14,
+    "order": 18,
     "place_raw": "武当山",
     "place_modern": "湖北省十堰市武当山",
     "layer": "major",
@@ -345,22 +445,72 @@
     "lon": 111.0042,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "武当山金顶：32.4003, 111.0042",
     "visits": [
       {
-        "chapter_num": 6,
+        "chapter_num": 7,
         "chapter_title": "游太和山",
         "time_raw": "天启三年",
         "time_note": "约1623年",
         "duration": "数日",
-        "description": "游太和山（武当山），朝金顶，观道教建筑群",
+        "description": "游太和山（武当山），朝金顶，观道教宫殿建筑群",
         "source": "web",
         "source_sentence": "天启三年，徐霞客游太和山，登金顶，道教圣地，宫观雄伟。"
       }
     ]
   },
   {
-    "order": 15,
+    "order": 19,
+    "place_raw": "北京",
+    "place_modern": "北京市",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 39.9042,
+    "lon": 116.4074,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "北京故宫：39.9042, 116.4074",
+    "visits": [
+      {
+        "chapter_num": 8,
+        "chapter_title": "游北京",
+        "time_raw": "崇祯二年",
+        "time_note": "约1629年",
+        "duration": "数日",
+        "description": "游北京，为游历山海关和东北提前探路",
+        "source": "web",
+        "source_sentence": "崇祯二年，徐霞客北上游京师，游历宫阙，准备继续北行。"
+      }
+    ]
+  },
+  {
+    "order": 20,
+    "place_raw": "盘山",
+    "place_modern": "天津市蓟州区盘山",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 40.1097,
+    "lon": 117.3786,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "盘山景区：40.1097, 117.3786",
+    "visits": [
+      {
+        "chapter_num": 8,
+        "chapter_title": "游盘山",
+        "time_raw": "崇祯二年",
+        "time_note": "约1629年",
+        "duration": "数日",
+        "description": "游天津蓟县盘山，「京东第一山」，奇松怪石，古刹幽深",
+        "source": "web",
+        "source_sentence": "崇祯二年，徐霞客游盘山，叹其松石之奇，有「京东第一山」之称。"
+      }
+    ]
+  },
+  {
+    "order": 21,
     "place_raw": "五台山",
     "place_modern": "山西省忻州市五台山",
     "layer": "major",
@@ -370,49 +520,49 @@
     "lon": 113.5683,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "五台山北台叶斗峰：38.9575, 113.5683",
     "visits": [
       {
-        "chapter_num": 7,
-        "chapter_title": "游五台恒山",
+        "chapter_num": 9,
+        "chapter_title": "游五台山",
         "time_raw": "崇祯六年",
         "time_note": "约1633年",
         "duration": "数日",
-        "description": "北上游五台山，佛教圣地，登北台叶斗峰",
+        "description": "北上游五台山，佛教圣地，登北台叶斗峰，为华北最高峰",
         "source": "web",
         "source_sentence": "崇祯六年，徐霞客北上游五台山，登北台，为华北最高峰。"
       }
     ]
   },
   {
-    "order": 16,
+    "order": 22,
     "place_raw": "恒山",
     "place_modern": "山西省大同市浑源县恒山",
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 39.7,
-    "lon": 113.7333,
+    "lat": 39.7006,
+    "lon": 113.7389,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "恒山悬空寺：39.7006, 113.7389",
     "visits": [
       {
-        "chapter_num": 7,
-        "chapter_title": "游五台恒山",
+        "chapter_num": 9,
+        "chapter_title": "游恒山",
         "time_raw": "崇祯六年",
         "time_note": "约1633年",
         "duration": "数日",
-        "description": "游恒山，悬空寺，北岳之雄",
+        "description": "游恒山，观悬空寺，北岳之雄，「恒山如行」",
         "source": "web",
         "source_sentence": "崇祯六年，徐霞客游恒山，观悬空寺，叹北岳之险绝。"
       }
     ]
   },
   {
-    "order": 17,
-    "place_raw": "广西",
-    "place_modern": "广西桂林",
+    "order": 23,
+    "place_raw": "桂林",
+    "place_modern": "广西省桂林市",
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
@@ -420,122 +570,172 @@
     "lon": 110.29,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "以桂林为代表",
+    "coord_note": "桂林独秀峰：25.2736, 110.29",
     "visits": [
       {
-        "chapter_num": 8,
-        "chapter_title": "西南大游历·广西",
+        "chapter_num": 10,
+        "chapter_title": "西南大游历·桂林",
         "time_raw": "崇祯十年",
         "time_note": "约1637年",
         "duration": "数月",
-        "description": "游广西桂林、阳朔等地，探察溶洞与喀斯特地貌",
+        "description": "游桂林，探七星岩、芦笛岩等溶洞，详细记录喀斯特地貌成因",
         "source": "web",
-        "source_sentence": "崇祯十年，徐霞客入广西，游桂林诸山，深入探察石灰岩溶洞。"
+        "source_sentence": "崇祯十年，徐霞客入广西，游桂林诸山，深入探察石灰岩溶洞，为科学研究作出贡献。"
       }
     ]
   },
   {
-    "order": 18,
-    "place_raw": "贵州",
-    "place_modern": "贵州贵阳",
+    "order": 24,
+    "place_raw": "阳朔",
+    "place_modern": "广西省桂林市阳朔县",
     "layer": "transit",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 26.6477,
-    "lon": 106.6298,
+    "lat": 24.7792,
+    "lon": 110.4961,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "以贵阳为代表",
-    "visits": [
-      {
-        "chapter_num": 9,
-        "chapter_title": "西南大游历·贵州",
-        "time_raw": "崇祯十一年",
-        "time_note": "约1638年",
-        "duration": "数月",
-        "description": "经贵州入云南，探察盘江、黄果树一带地貌",
-        "source": "web",
-        "source_sentence": "崇祯十一年，徐霞客经贵州西行，探察盘江河谷，继续西进云南。"
-      }
-    ]
-  },
-  {
-    "order": 19,
-    "place_raw": "大理",
-    "place_modern": "云南省大理市",
-    "layer": "major",
-    "confidence": "confirmed",
-    "route_to_next": "straight",
-    "lat": 25.6065,
-    "lon": 100.2676,
-    "resolved": true,
-    "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "阳朔西街：24.7792, 110.4961",
     "visits": [
       {
         "chapter_num": 10,
-        "chapter_title": "云南·大理",
-        "time_raw": "崇祯十二年",
-        "time_note": "约1639年",
-        "duration": "数月",
-        "description": "深入大理探察苍山洱海，为当地土司木氏接待",
+        "chapter_title": "西南大游历·阳朔",
+        "time_raw": "崇祯十年",
+        "time_note": "约1637年",
+        "duration": "数日",
+        "description": "泛舟漓江，游阳朔，探察奇峰异石与喀斯特岩洞",
         "source": "web",
-        "source_sentence": "崇祯十二年，徐霞客至大理，探苍山十八溪，泛舟洱海，受木氏土司盛情款待。"
+        "source_sentence": "徐霞客沿漓江南下，至阳朔，山水如画，叹为观止。"
       }
     ]
   },
   {
-    "order": 20,
-    "place_raw": "丽江",
-    "place_modern": "云南省丽江市",
-    "layer": "major",
+    "order": 25,
+    "place_raw": "柳州",
+    "place_modern": "广西省柳州市",
+    "layer": "transit",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 26.8721,
-    "lon": 100.2299,
+    "lat": 24.3264,
+    "lon": 109.4281,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "柳州市区：24.3264, 109.4281",
     "visits": [
       {
         "chapter_num": 10,
-        "chapter_title": "云南·丽江",
-        "time_raw": "崇祯十二年",
-        "time_note": "约1639年",
-        "duration": "数月",
-        "description": "游丽江，受木氏土司木增接待，探察玉龙雪山",
+        "chapter_title": "西南大游历·柳州",
+        "time_raw": "崇祯十年",
+        "time_note": "约1637年",
+        "duration": "数日",
+        "description": "游柳州，探察都峤山、莲花洞等溶洞，继续西行",
         "source": "web",
-        "source_sentence": "崇祯十二年，徐霞客游丽江，木氏土司木增以礼相待，资助其继续西行。"
+        "source_sentence": "徐霞客游柳州，探察诸溶洞，记录柳江两岸地貌。"
       }
     ]
   },
   {
-    "order": 21,
-    "place_raw": "腾冲",
-    "place_modern": "云南省保山市腾冲市",
+    "order": 26,
+    "place_raw": "南宁",
+    "place_modern": "广西省南宁市",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 22.8167,
+    "lon": 108.3669,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "南宁市区：22.8167, 108.3669",
+    "visits": [
+      {
+        "chapter_num": 10,
+        "chapter_title": "西南大游历·南宁",
+        "time_raw": "崇祯十年至十一年",
+        "time_note": "约1637-1638年",
+        "duration": "数日",
+        "description": "经南宁北上入贵州，为进入黔桂边境的中转",
+        "source": "web",
+        "source_sentence": "徐霞客经南宁一带，北上入黔，进入贵州境内。"
+      }
+    ]
+  },
+  {
+    "order": 27,
+    "place_raw": "黄果树",
+    "place_modern": "贵州省安顺市镇宁县黄果树",
     "layer": "major",
     "confidence": "confirmed",
     "route_to_next": "straight",
-    "lat": 25.0204,
-    "lon": 98.4944,
+    "lat": 25.9896,
+    "lon": 105.6617,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "黄果树瀑布：25.9896, 105.6617",
     "visits": [
       {
         "chapter_num": 11,
-        "chapter_title": "云南·腾冲",
-        "time_raw": "崇祯十二年",
-        "time_note": "约1639年",
-        "duration": "数月",
-        "description": "抵腾冲，中国西南极边之地，探察火山地热",
+        "chapter_title": "西南大游历·黄果树",
+        "time_raw": "崇祯十一年",
+        "time_note": "约1638年",
+        "duration": "数日",
+        "description": "游黄果树大瀑布，为徐霞客所记「白水河瀑布」，详细测量记录",
         "source": "web",
-        "source_sentence": "崇祯十二年，徐霞客至腾冲，为其西行最远点，探察火山热海奇观。"
+        "source_sentence": "崇祯十一年，徐霞客至黄果树，观白水河瀑布之壮，仔细测量记录。"
       }
     ]
   },
   {
-    "order": 22,
+    "order": 28,
+    "place_raw": "安顺",
+    "place_modern": "贵州省安顺市",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 26.2456,
+    "lon": 105.9325,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "安顺市区：26.2456, 105.9325",
+    "visits": [
+      {
+        "chapter_num": 11,
+        "chapter_title": "西南大游历·安顺",
+        "time_raw": "崇祯十一年",
+        "time_note": "约1638年",
+        "duration": "数日",
+        "description": "在安顺一带探察龙宫溶洞等喀斯特地貌，继续西行入滇",
+        "source": "web",
+        "source_sentence": "徐霞客游安顺，探龙宫溶洞，喀斯特地貌之盛，叹为观止。"
+      }
+    ]
+  },
+  {
+    "order": 29,
+    "place_raw": "云南入境",
+    "place_modern": "云南省曲靖市",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 25.4898,
+    "lon": 103.7961,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "曲靖市区，黔滇入境处",
+    "visits": [
+      {
+        "chapter_num": 12,
+        "chapter_title": "入滇",
+        "time_raw": "崇祯十一年",
+        "time_note": "约1638年",
+        "duration": "",
+        "description": "由贵州入云南，抵曲靖，开始四年云南深度游历",
+        "source": "web",
+        "source_sentence": "崇祯十一年，徐霞客由黔入滇，至曲靖，开始其云南游历。"
+      }
+    ]
+  },
+  {
+    "order": 30,
     "place_raw": "昆明",
     "place_modern": "云南省昆明市",
     "layer": "major",
@@ -545,22 +745,132 @@
     "lon": 102.7183,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "昆明滇池：25.0389, 102.7183",
     "visits": [
       {
         "chapter_num": 12,
+        "chapter_title": "云南·昆明初到",
+        "time_raw": "崇祯十一年",
+        "time_note": "约1638年",
+        "duration": "数月",
+        "description": "初抵昆明，游滇池，结识名僧担当，以昆明为基地向四方出发",
+        "source": "web",
+        "source_sentence": "崇祯十一年，徐霞客至昆明，游滇池，结识名士，以此为游历云南之基地。"
+      },
+      {
+        "chapter_num": 15,
         "chapter_title": "云南·昆明病倒",
         "time_raw": "崇祯十三年",
         "time_note": "约1640年",
         "duration": "数月",
-        "description": "在昆明积劳成疾，双足不能行走，由知府安排护送返乡",
+        "description": "返回昆明后积劳成疾，双足不能行走，由云南巡抚安排护送返乡",
         "source": "web",
         "source_sentence": "崇祯十三年，徐霞客在昆明病倒，足疾加剧，无力继续游历，由云南巡抚安排轿夫送返故乡。"
       }
     ]
   },
   {
-    "order": 23,
+    "order": 31,
+    "place_raw": "大理",
+    "place_modern": "云南省大理市",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 25.6065,
+    "lon": 100.2676,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "大理古城：25.6065, 100.2676",
+    "visits": [
+      {
+        "chapter_num": 13,
+        "chapter_title": "云南·大理",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "深入大理探察苍山洱海，攀苍山雪，泛舟洱海，受木氏土司款待",
+        "source": "web",
+        "source_sentence": "崇祯十二年，徐霞客至大理，探苍山十八溪，泛舟洱海，受木氏土司盛情款待。"
+      }
+    ]
+  },
+  {
+    "order": 32,
+    "place_raw": "丽江",
+    "place_modern": "云南省丽江市",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 26.8721,
+    "lon": 100.2299,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "丽江古城：26.8721, 100.2299",
+    "visits": [
+      {
+        "chapter_num": 13,
+        "chapter_title": "云南·丽江",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "游丽江，受木氏土司木增盛情接待，探察玉龙雪山、虎跳峡",
+        "source": "web",
+        "source_sentence": "崇祯十二年，徐霞客游丽江，木氏土司木增以礼相待，资助其继续西行。"
+      }
+    ]
+  },
+  {
+    "order": 33,
+    "place_raw": "永昌",
+    "place_modern": "云南省保山市",
+    "layer": "transit",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 25.1122,
+    "lon": 99.1614,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "保山市区（古永昌府）：25.1122, 99.1614",
+    "visits": [
+      {
+        "chapter_num": 14,
+        "chapter_title": "云南·永昌",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数日",
+        "description": "经永昌（保山）西行，为赴腾冲必经之地，古西南丝路要道",
+        "source": "web",
+        "source_sentence": "徐霞客经永昌府西行，沿古西南丝绸之路，前往极边腾冲。"
+      }
+    ]
+  },
+  {
+    "order": 34,
+    "place_raw": "腾冲",
+    "place_modern": "云南省保山市腾冲市",
+    "layer": "major",
+    "confidence": "confirmed",
+    "route_to_next": "straight",
+    "lat": 25.0204,
+    "lon": 98.4944,
+    "resolved": true,
+    "geo_source": "nominatim",
+    "coord_note": "腾冲热海景区：25.0204, 98.4944",
+    "visits": [
+      {
+        "chapter_num": 14,
+        "chapter_title": "云南·腾冲",
+        "time_raw": "崇祯十二年",
+        "time_note": "约1639年",
+        "duration": "数月",
+        "description": "抵腾冲，中国西南极边之地，探察火山、热海，为其最西端游历终点",
+        "source": "web",
+        "source_sentence": "崇祯十二年，徐霞客至腾冲，为其西行最远点，探察火山热海奇观。"
+      }
+    ]
+  },
+  {
+    "order": 35,
     "place_raw": "江阴",
     "place_modern": "江苏省江阴市",
     "layer": "major",
@@ -570,15 +880,15 @@
     "lon": 120.2853,
     "resolved": true,
     "geo_source": "nominatim",
-    "coord_note": "",
+    "coord_note": "江阴市区，徐霞客故居",
     "visits": [
       {
-        "chapter_num": 13,
+        "chapter_num": 16,
         "chapter_title": "返乡病逝",
-        "time_raw": "崇祯十四年",
+        "time_raw": "崇祯十四年正月",
         "time_note": "约1641年",
         "duration": "",
-        "description": "被轿夫送返故乡江阴，数月后病逝，终年五十四岁",
+        "description": "由知府以轿夫送返故乡江阴，数月后病逝，终年五十四岁，留下260余万字游记",
         "source": "web",
         "source_sentence": "崇祯十四年，徐霞客返江阴故里，是年正月卒，年五十四。"
       }
