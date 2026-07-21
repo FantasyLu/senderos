@@ -21,7 +21,7 @@ description: |
 | 资源 | 路径 | 用途 |
 |------|------|------|
 | 地图 HTML 模板 | `references/map-template.html` | Leaflet 地图骨架，由 render_map.py 填充 |
-| 古地名坐标库 | `references/ancient-place-names.md` | 历史地名 → 现代坐标映射，覆盖明清/唐宋/元代/玄奘/郑和等 |
+| 古地名坐标库 | `references/ancient-place-names.md` | 历史地名 → 现代坐标映射，覆盖明清/唐宋/元代/玄奘/郑和/近现代欧非/南美等 |
 | 电子书解析脚本 | `scripts/parse_ebook.py` | epub/mobi/azw3 → 结构化章节列表（纯文本+标题）|
 | 坐标解析脚本 | `scripts/geocode.py` | 地名 → 坐标（优先本地库，次用 OSM Nominatim API）|
 | 地图渲染脚本 | `scripts/render_map.py` | waypoints JSON → Leaflet HTML，含 CHECKPOINT 表格生成 |
@@ -535,7 +535,7 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 | 6 | 一次性跑完所有内容才让用户看到结果 | 必须在坐标解析后、渲染前设置 CHECKPOINT |
 | 7 | 大部头书不询问范围直接全量处理 | 超过 20 章时先询问用户要处理的范围 |
 | 8 | 用知乎、微信公众号、百度百科作为人物信息来源 | 只用权威媒体、正史、传记、学术资料 |
-| 9 | 途经点（transit）不参与路线连线已移除，现在所有节点按顺序连线 | — |
+| 9 | transit 途经点不参与路线连线（旧规则，已移除） | 现在所有节点按时间顺序依次连线，transit 节点也参与连线但使用虚线 |
 | 10 | 同一地点多次出现时创建多个图钉重叠 | 合并为一个图钉，visits[] 数组保存所有到访记录 |
 | 11 | PDF 中其他人物到过的地点混入目标人物路线 | source_sentence 的主语必须是目标人物或其别名，否则不纳入 |
 | 12 | 用户未指定人物时，默认假设是作者路线 | 必须先询问确认目标人物，再开始提取 |
