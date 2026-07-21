@@ -38,6 +38,7 @@ description: |
 | 上传了 PDF，说「画路线」「根据这本书画地图」「画书中XX的路线」 | → **Mode A**（PDF 解析） |
 | 上传了 epub / mobi / azw3，说「画路线」 | → **Mode A**（epub/mobi 解析） |
 | 说「XXX走过哪些地方」「画出XX的路线」，无文件 | → **Mode B 纯检索** |
+| 说「XX在YYYY-YYYY年间的路线」「XX某次旅行的路线」 | → **Mode B 纯检索**，同时记录时间段约束 |
 | 说人物名 + 上传了 PDF/epub/mobi | → **Mode B 混合**（文件优先 + 网络补充）|
 | 输入模糊（只说「画地图」）| → 追问：「是要根据一本书画路线，还是指定一个人物？」|
 
@@ -304,6 +305,19 @@ python scripts/render_map.py output/<书名>_waypoints_final.json \
 2. **人物类型**：历史人物 / 现代人物（影响信息源选择策略）
 3. **路线范围**（可选）：全生涯 / 某次具体旅程 / 某个时间段
 
+**时间段参数提取**：若用户输入中包含时间约束（如「1920-1930年间」「二战期间」「青年时期」），记录为：
+
+```
+TIME_RANGE = {
+  "start": 1920,   # 开始年份（整数，若为模糊描述则估算）
+  "end": 1930,     # 结束年份（整数）
+  "raw": "1920-1930年间",  # 用户原始描述，原样保留
+  "is_estimate": false     # 若年份由模糊描述估算而来，标为 true
+}
+```
+
+若无时间约束，`TIME_RANGE = null`，默认处理全生涯路线。
+
 **确认不阻塞交付**：如用户直接说「画 XXX 的路线」，默认全生涯路线 + 无 PDF + 自动判断历史/现代，直接进入 Phase B-1。
 
 ---
@@ -338,6 +352,12 @@ python scripts/render_map.py output/<书名>_waypoints_final.json \
   - 重要旅行/出行记录（访谈、年谱、大事记）
   - 历史文献中关于此人行踪的记载
 
+如果 TIME_RANGE != null：
+  - 搜索关键词中加入时间约束（如「玄奘 629-645 行程」「鲁迅 1920-1930 活动地点」）
+  - 优先检索该时间段的年谱、大事记、传记对应章节
+  - 对检索到的每条信息，尝试判断其时间是否落在 TIME_RANGE 内；
+    无法判断时间的条目标记 time_uncertain=true，保留供 Agent 3 处理
+
 信息源偏好：
   历史人物 → 正史、方志、文集、考古研究
   现代人物 → 自传、采访、旅行类著作
@@ -355,7 +375,20 @@ python scripts/render_map.py output/<书名>_waypoints_final.json \
 交叉验证：PDF 内容 vs 网络资料是否有矛盾
 古地名解析：查询 references/ancient-place-names.md（历史人物必做）
 发现矛盾时：保留矛盾，在 visit.description 中注明「来源存在分歧」
-输出：按时间排序的完整 waypoints 列表
+
+如果 TIME_RANGE != null，对每个 waypoint 执行时间过滤：
+  对每个 visit，尝试从 time_raw 解析年份：
+    - 能解析出年份 → 判断是否在 [TIME_RANGE.start, TIME_RANGE.end] 内
+      · 在范围内 → in_range: true
+      · 不在范围内 → in_range: false
+    - 无法解析年份（time_uncertain=true）→ in_range: "uncertain"，保留但在 CHECKPOINT 中标注
+  
+  过滤规则：
+    · 某 waypoint 的所有 visit 均为 in_range: false → 整个节点标记 excluded: true，不纳入最终路线
+    · 某 waypoint 有部分 visit in_range: false → 仅保留 in_range: true/uncertain 的 visit
+    · 被排除的节点汇总为「时间范围外节点列表」，在 CHECKPOINT 中展示
+
+输出：按时间排序的完整 waypoints 列表，每个 visit 含 in_range 字段
 ```
 
 ---
@@ -383,6 +416,25 @@ python scripts/render_map.py output/<书名>_waypoints_final.json \
 - PDF 覆盖了哪些时间段（如有）
 - 网络检索补充了哪些路段
 - 哪些路段仅靠推断（source: "inferred"）
+
+如果 TIME_RANGE != null，额外展示时间过滤报告：
+
+```
+⏱ 时间范围过滤：TIME_RANGE.raw（TIME_RANGE.start–TIME_RANGE.end）
+
+纳入路线：N 个节点
+时间不确定（保留）：N 个节点 ⚠️（请人工确认是否在范围内）
+已排除（范围外）：N 个节点
+
+已排除节点一览：
+| 地点 | 时间记录 | 排除原因 |
+|------|---------|---------|
+| 上海 | 1935年 | 超出结束年份 1930 |
+| 东京 | 1918年 | 早于开始年份 1920 |
+…
+
+如需恢复某个被排除的节点，请告知 AI。
+```
 
 **等用户确认后进入渲染。**
 
@@ -511,6 +563,11 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 
 # Mode B（纯检索）
 「帮我画马可·波罗的旅行路线」
+「画玄奘西行取经的路线图」
+
+# Mode B（时间段约束）
+「画鲁迅在 1920-1930 年间的活动路线」
+「画某人二战期间的路线」
 
 # Mode B（混合）
 「我上传了一些关于玄奘西行的资料，帮我画出他的路线」→ 上传 PDF
