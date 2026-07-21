@@ -237,20 +237,21 @@ def render(
     for wp in render_wps:
         wp = dict(wp)  # 避免修改原对象
         if not wp.get("visits"):
-            event_text = wp.get("event", "")
-            year_text  = wp.get("year", "")
+            event_text     = wp.get("event", "")
+            year_text      = wp.get("year", "")
+            chapter_title  = wp.get("chapter_title", "") or (f"{year_text}年" if year_text else "")
             # confidence 映射到 source
             conf = wp.get("confidence", "single_source")
             source = "web" if conf in ("confirmed", "single_source") else "inferred"
             wp["visits"] = [{
-                "chapter_num":   wp.get("order", 0),
-                "chapter_title": f"{year_text}年" if year_text else "",
-                "time_raw":      year_text,
-                "time_note":     "",
-                "duration":      "",
-                "description":   event_text,
-                "source":        source,
-                "source_sentence": event_text,
+                "chapter_num":     wp.get("order", 0),
+                "chapter_title":   chapter_title,
+                "time_raw":        year_text,
+                "time_note":       "",
+                "duration":        "",
+                "description":     event_text,
+                "source":          source,
+                "source_sentence": wp.get("source_sentence", event_text),
             }]
         normalized.append(wp)
     render_wps = normalized
