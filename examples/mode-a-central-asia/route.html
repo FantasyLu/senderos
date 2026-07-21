@@ -265,8 +265,8 @@
     margin: 3px 0;
   }
   .legend-marker {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.3); flex-shrink: 0;
   }
   .legend-line {
     width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px;
@@ -2021,12 +2021,12 @@ function makeIcon(color, size, opacity, badge) {
 }
 
 const ICONS = {
-  major_confirmed:     makeIcon('#c0703a', 20),          // 深橙，多源确认
-  major_single:        makeIcon('#d4803a', 20),          // 橙色，单一来源
-  major_inferred:      makeIcon('#d4b040', 20, 1, '?'),  // 金色+?，推测
-  major_disputed:      makeIcon('#c04020', 20, 1, '!'),  // 红橙+!，存在矛盾
-  transit:             makeIcon('#6080a0', 13),
-  transit_inferred:    makeIcon('#a0a060', 13, 0.8),
+  major_confirmed:     makeIcon('#c0703a', 12),          // 深橙，多源确认
+  major_single:        makeIcon('#d4803a', 12),          // 橙色，单一来源
+  major_inferred:      makeIcon('#d4b040', 12, 1, '?'),  // 金色+?，推测
+  major_disputed:      makeIcon('#c04020', 12, 1, '!'),  // 红橙+!，存在矛盾
+  transit:             makeIcon('#6080a0', 7),
+  transit_inferred:    makeIcon('#a0a060', 7, 0.8),
 };
 
 function getIcon(wp) {
