@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>《中亚行纪》埃丽卡·法特兰</title>
+<title>《中亚行纪》法特兰行程路线图</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
@@ -339,11 +339,35 @@
     border-radius: 20px;
     padding: 6px 10px;
     display: flex;
+    align-items: center;
     gap: 6px;
     flex-wrap: wrap;
     max-width: 80vw;
     box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    transition: padding 0.2s;
   }
+  /* 收起时只显示 toggle 按钮，背景缩成小胶囊 */
+  #stage-switcher.collapsed {
+    padding: 4px 8px;
+    flex-wrap: nowrap;
+  }
+  #stage-switcher.collapsed .stage-btn {
+    display: none;
+  }
+  #stage-toggle-btn {
+    background: rgba(255,255,255,0.15);
+    color: #e8d5b0;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    user-select: none;
+  }
+  #stage-toggle-btn:hover { background: rgba(255,255,255,0.28); }
   .stage-btn {
     background: rgba(255,255,255,0.12);
     color: #e8d5b0;
@@ -424,8 +448,8 @@
 
 <!-- 顶部标题栏 -->
 <div id="header">
-  <h1>《中亚行纪》埃丽卡·法特兰</h1>
-  <span class="subtitle">土库曼斯坦 · 哈萨克斯坦 · 塔吉克斯坦 · 吉尔吉斯斯坦 · 乌兹别克斯坦</span>
+  <h1>《中亚行纪》法特兰行程路线图</h1>
+  <span class="subtitle">土库曼斯坦 → 哈萨克斯坦 → 塔吉克斯坦 → 吉尔吉斯斯坦 → 乌兹别克斯坦</span>
   <div class="stats">
     <div class="stat-item">
       <span class="stat-dot" style="background:#c0703a;"></span>
@@ -1800,8 +1824,8 @@ const WAYPOINTS = [
 const MAP_CENTER = [41.4027972972973, 67.52434324324325];
 const MAP_ZOOM = 4;
 const USE_CLUSTER = false;
-const USE_STAGES = true;
-const STAGES_DATA = [{"label": "其他", "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]}];
+const USE_STAGES = false;
+const STAGES_DATA = [];
 
 // ── 初始化地图 ──
 const map = L.map('map', {
@@ -1810,11 +1834,32 @@ const map = L.map('map', {
   zoomControl: true,
 });
 
-// 底图：OpenStreetMap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// 底图：OSM 优先，国内访问失败时自动兜底换高德
+const osmTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 18,
-}).addTo(map);
+  subdomains: 'abc',
+});
+
+const gaodeTile = L.tileLayer(
+  'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+  {
+    attribution: '© <a href="https://www.amap.com/">高德地图</a>',
+    maxZoom: 18,
+    subdomains: '1234',
+  }
+);
+
+let gaodeFallbackTriggered = false;
+osmTile.on('tileerror', function() {
+  if (gaodeFallbackTriggered) return;
+  gaodeFallbackTriggered = true;
+  map.removeLayer(osmTile);
+  gaodeTile.addTo(map);
+  console.info('[senderos] OSM 瓦片加载失败，已切换至高德地图底图');
+});
+
+osmTile.addTo(map);
 
 // ── 图标定义 ──
 function makeIcon(color, size, opacity, badge) {
@@ -2192,7 +2237,18 @@ function initStageSwitcher() {
   const switcher = document.getElementById('stage-switcher');
   switcher.style.display = 'flex';
 
-  // 「全部」按钮
+  // ── 收起/展开 toggle 按钮（放在最左侧）──
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'stage-toggle-btn';
+  toggleBtn.textContent = '▾ 章节';
+  toggleBtn.title = '收起/展开章节切换器';
+  toggleBtn.addEventListener('click', () => {
+    const collapsed = switcher.classList.toggle('collapsed');
+    toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
+  });
+  switcher.appendChild(toggleBtn);
+
+  // ── 「全部」按钮 ──
   const allBtn = document.createElement('button');
   allBtn.className = 'stage-btn all active';
   allBtn.textContent = '全部';
@@ -2202,7 +2258,7 @@ function initStageSwitcher() {
   });
   switcher.appendChild(allBtn);
 
-  // 各阶段按钮
+  // ── 各阶段按钮 ──
   STAGES_DATA.forEach((stage, si) => {
     const btn = document.createElement('button');
     btn.className = 'stage-btn';
