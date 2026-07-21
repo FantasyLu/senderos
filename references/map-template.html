@@ -403,53 +403,85 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    background: rgba(26, 26, 46, 0.92);
-    border-radius: 20px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    max-width: 80vw;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-    transition: padding 0.2s;
   }
-  /* 收起时只显示 toggle 按钮，背景缩成小胶囊 */
-  #stage-switcher.collapsed {
-    padding: 4px 8px;
-    flex-wrap: nowrap;
-  }
-  #stage-switcher.collapsed .stage-btn {
+  /* 收起状态：只显示胶囊按钮 */
+  #stage-switcher.collapsed #stage-panel {
     display: none;
   }
   #stage-toggle-btn {
-    background: rgba(255,255,255,0.15);
+    display: block;
+    background: rgba(26, 26, 46, 0.88);
     color: #e8d5b0;
     border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    transition: background 0.15s;
+    user-select: none;
+    letter-spacing: 0.04em;
+  }
+  #stage-toggle-btn:hover { background: rgba(40, 40, 70, 0.95); }
+  /* 展开的筛选面板 */
+  #stage-panel {
+    margin-top: 6px;
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 12px;
-    padding: 3px 10px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #e8d5b0;
+  }
+  #stage-panel label { color: #c0a880; font-size: 11px; }
+  #stage-panel select {
+    background: rgba(255,255,255,0.1);
+    color: #f0e4c8;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    max-width: 180px;
+    outline: none;
+  }
+  #stage-panel select:focus { border-color: rgba(255,255,255,0.45); }
+  #stage-panel select option { background: #1a1a2e; color: #f0e4c8; }
+  #stage-apply-btn {
+    background: #c0703a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 12px;
     font-size: 12px;
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;
-    flex-shrink: 0;
-    user-select: none;
   }
-  #stage-toggle-btn:hover { background: rgba(255,255,255,0.28); }
-  .stage-btn {
+  #stage-apply-btn:hover { background: #d4844a; }
+  #stage-all-btn {
     background: rgba(255,255,255,0.12);
     color: #e8d5b0;
     border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 14px;
-    padding: 3px 12px;
+    border-radius: 8px;
+    padding: 4px 10px;
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.15s;
     white-space: nowrap;
   }
-  .stage-btn:hover  { background: rgba(255,255,255,0.22); }
-  .stage-btn.active { background: #c0703a; border-color: #e08050; color: #fff; }
-  .stage-btn.all    { background: rgba(255,255,255,0.18); }
+  #stage-all-btn:hover { background: rgba(255,255,255,0.22); }
+  #stage-range-label {
+    font-size: 11px;
+    color: #a09070;
+    margin-left: 4px;
+  }
 
   /* ── 滚动条 ── */
   #timeline::-webkit-scrollbar { width: 5px; }
@@ -982,46 +1014,147 @@ function initStageSwitcher() {
   if (!USE_STAGES || !STAGES_DATA || STAGES_DATA.length === 0) return;
 
   const switcher = document.getElementById('stage-switcher');
-  switcher.style.display = 'flex';
+  switcher.style.display = 'block';
 
-  // ── 收起/展开 toggle 按钮（放在最左侧）──
+  // ── toggle 胶囊按钮 ──
   const toggleBtn = document.createElement('button');
   toggleBtn.id = 'stage-toggle-btn';
-  toggleBtn.textContent = '▸ 章节';
-  toggleBtn.title = '收起/展开章节切换器';
-  toggleBtn.addEventListener('click', () => {
-    const collapsed = switcher.classList.toggle('collapsed');
-    toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
-  });
+  toggleBtn.title = '展开/收起章节筛选';
   switcher.appendChild(toggleBtn);
-  switcher.classList.add('collapsed'); // 默认收起
+  switcher.classList.add('collapsed');
 
-  // ── 「全部」按钮 ──
+  function updateToggleLabel() {
+    const collapsed = switcher.classList.contains('collapsed');
+    toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
+  }
+  toggleBtn.addEventListener('click', () => {
+    switcher.classList.toggle('collapsed');
+    updateToggleLabel();
+  });
+  updateToggleLabel();
+
+  // ── 筛选面板 ──
+  const panel = document.createElement('div');
+  panel.id = 'stage-panel';
+
+  // 「从」标签 + select
+  const fromLabel = document.createElement('label');
+  fromLabel.textContent = '从';
+  const fromSel = document.createElement('select');
+  fromSel.id = 'stage-from-sel';
+
+  // 「到」标签 + select
+  const toLabel = document.createElement('label');
+  toLabel.textContent = '到';
+  const toSel = document.createElement('select');
+  toSel.id = 'stage-to-sel';
+
+  // 填充选项
+  STAGES_DATA.forEach((stage, si) => {
+    const optF = document.createElement('option');
+    optF.value = si;
+    optF.textContent = stage.label;
+    fromSel.appendChild(optF);
+
+    const optT = document.createElement('option');
+    optT.value = si;
+    optT.textContent = stage.label;
+    toSel.appendChild(optT);
+  });
+  toSel.value = STAGES_DATA.length - 1;  // 默认「到」=最后一章
+
+  // 「从」变更时，「到」不能早于「从」
+  fromSel.addEventListener('change', () => {
+    const f = parseInt(fromSel.value);
+    if (parseInt(toSel.value) < f) toSel.value = f;
+    Array.from(toSel.options).forEach(opt => {
+      opt.disabled = parseInt(opt.value) < f;
+    });
+  });
+
+  // 应用按钮
+  const applyBtn = document.createElement('button');
+  applyBtn.id = 'stage-apply-btn';
+  applyBtn.textContent = '应用';
+  applyBtn.addEventListener('click', () => {
+    const f = parseInt(fromSel.value);
+    const t = parseInt(toSel.value);
+    showStageRange(f, t);
+    updateRangeLabel(f, t);
+  });
+
+  // 全部按钮
   const allBtn = document.createElement('button');
-  allBtn.className = 'stage-btn all active';
+  allBtn.id = 'stage-all-btn';
   allBtn.textContent = '全部';
   allBtn.addEventListener('click', () => {
     showAllMarkers();
-    setActiveStageBtn(allBtn);
+    updateRangeLabel(-1, -1);
   });
-  switcher.appendChild(allBtn);
 
-  // ── 各阶段按钮 ──
-  STAGES_DATA.forEach((stage, si) => {
-    const btn = document.createElement('button');
-    btn.className = 'stage-btn';
-    btn.textContent = stage.label;
-    btn.addEventListener('click', () => {
-      showStageMarkers(stage.indices);
-      setActiveStageBtn(btn);
-    });
-    switcher.appendChild(btn);
-  });
+  // 当前范围提示
+  const rangeLabel = document.createElement('span');
+  rangeLabel.id = 'stage-range-label';
+
+  function updateRangeLabel(f, t) {
+    if (f < 0) {
+      rangeLabel.textContent = '（全部）';
+      toggleBtn.textContent = '▸ 章节';
+      // 若收起则更新 toggle 文字
+      if (!switcher.classList.contains('collapsed')) toggleBtn.textContent = '▾ 章节';
+    } else {
+      const fl = STAGES_DATA[f].label;
+      const tl = STAGES_DATA[t].label;
+      const text = f === t ? fl : `${fl} → ${tl}`;
+      rangeLabel.textContent = `（${text}）`;
+    }
+  }
+  updateRangeLabel(-1, -1);
+
+  panel.appendChild(fromLabel);
+  panel.appendChild(fromSel);
+  panel.appendChild(toLabel);
+  panel.appendChild(toSel);
+  panel.appendChild(applyBtn);
+  panel.appendChild(allBtn);
+  panel.appendChild(rangeLabel);
+  switcher.appendChild(panel);
 }
 
-function setActiveStageBtn(activeBtn) {
-  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
-  activeBtn.classList.add('active');
+function setActiveStageBtn() {} // 保留空函数，避免旧调用报错
+
+// 显示从第 fromStageIdx 到 toStageIdx 章节（含）的所有 waypoint
+function showStageRange(fromSI, toSI) {
+  const idxSet = new Set();
+  for (let si = fromSI; si <= toSI; si++) {
+    STAGES_DATA[si].indices.forEach(i => idxSet.add(i));
+  }
+  activeWaypoints = WAYPOINTS.filter((_, i) => idxSet.has(i));
+
+  Object.entries(markers).forEach(([idx, m]) => {
+    const show = idxSet.has(parseInt(idx));
+    if (USE_CLUSTER) {
+      if (show && !clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
+      if (!show && clusterGroup.hasLayer(m)) clusterGroup.removeLayer(m);
+    } else {
+      if (show && !map.hasLayer(m)) m.addTo(map);
+      if (!show && map.hasLayer(m)) map.removeLayer(m);
+    }
+  });
+
+  if (routeMode === 'seq') {
+    seqReset(activeWaypoints);
+    seqStart(activeWaypoints);
+  } else {
+    drawAll(activeWaypoints);
+  }
+
+  const pts = activeWaypoints
+    .filter(wp => wp.lat && wp.lon)
+    .map(wp => [wp.lat, wp.lon]);
+  if (pts.length > 0) {
+    map.fitBounds(pts, { padding: [40, 40], maxZoom: 10 });
+  }
 }
 
 function showAllMarkers() {
@@ -1039,39 +1172,6 @@ function showAllMarkers() {
     seqStart(activeWaypoints);
   } else {
     drawAll(activeWaypoints);
-  }
-}
-
-function showStageMarkers(indices) {
-  const idxSet = new Set(indices);
-  // 更新激活的 waypoint 子集（保持原始顺序）
-  activeWaypoints = WAYPOINTS.filter((_, i) => idxSet.has(i));
-
-  Object.entries(markers).forEach(([idx, m]) => {
-    const show = idxSet.has(parseInt(idx));
-    if (USE_CLUSTER) {
-      if (show && !clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
-      if (!show && clusterGroup.hasLayer(m)) clusterGroup.removeLayer(m);
-    } else {
-      if (show && !map.hasLayer(m)) m.addTo(map);
-      if (!show && map.hasLayer(m)) map.removeLayer(m);
-    }
-  });
-
-  // 重绘路线（按当前路线模式，仅在激活点之间）
-  if (routeMode === 'seq') {
-    seqReset(activeWaypoints);
-    seqStart(activeWaypoints);
-  } else {
-    drawAll(activeWaypoints);
-  }
-
-  // 自动缩放到该阶段
-  const pts = activeWaypoints
-    .filter(wp => wp.lat && wp.lon)
-    .map(wp => [wp.lat, wp.lon]);
-  if (pts.length > 0) {
-    map.fitBounds(pts, { padding: [40, 40], maxZoom: 10 });
   }
 }
 
