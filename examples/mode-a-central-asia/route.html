@@ -2110,6 +2110,15 @@ function seqStart(waypoints) {
     seqIndex++;
     updateSeqProgress(waypoints);
     updateSeqButtons();
+    // ── 自适应视图：将已点亮的所有节点纳入视野 ──
+    const visiblePts = wps.slice(0, seqIndex + 1)
+      .filter(wp => wp.lat && wp.lon)
+      .map(wp => [wp.lat, wp.lon]);
+    if (visiblePts.length >= 2) {
+      map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.5 });
+    } else if (visiblePts.length === 1) {
+      map.flyTo(visiblePts[0], map.getZoom(), { duration: 0.5 });
+    }
   }, 600);
 
   updateSeqButtons();
@@ -2154,6 +2163,13 @@ function seqJumpTo(waypointIdx, waypoints) {
   seqPaused = true;   // 暂停，等用户选择继续
   updateSeqProgress(waypoints);
   updateSeqButtons();
+  // ── 自适应视图：将已显示的所有节点纳入视野 ──
+  const visiblePts = wps.slice(0, drawTo + 1)
+    .filter(wp => wp.lat && wp.lon)
+    .map(wp => [wp.lat, wp.lon]);
+  if (visiblePts.length >= 2) {
+    map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.6 });
+  }
 }
 
 function updateSeqProgress(waypoints) {
