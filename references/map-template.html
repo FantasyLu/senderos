@@ -596,14 +596,7 @@ function getIcon(wp) {
 
 // ── 来源徽章 HTML ──
 function sourceBadge(source) {
-  const map = {
-    'pdf':        ['source-pdf', '📄 PDF资料'],
-    'user-pdf':   ['source-user-pdf', '📎 用户提供'],
-    'web':        ['source-web', '🌐 网络检索'],
-    'inferred':   ['source-inferred', '💭 推测'],
-  };
-  const [cls, label] = map[source] || ['source-web', source];
-  return `<span class="visit-source-badge ${cls}">${label}</span>`;
+  return '';
 }
 
 // ── 置信度标注 ──
@@ -1041,8 +1034,7 @@ legend.onAdd = function() {
     </div>
     </div>
     <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px; font-size:11px; color:#806040;">
-      <div>📄 PDF资料  📎 用户提供</div>
-      <div>🌐 网络检索  💭 推测</div>
+      <div>💭 推测路线以虚线标注</div>
     </div>
   `;
   return div;
