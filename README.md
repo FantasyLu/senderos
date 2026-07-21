@@ -101,7 +101,7 @@ senderos/
 
 ### 方式一：让 Agent 自动安装（推荐）
 
-直接把链接发给 Codewiz Agent：
+直接把链接发给你正在用的 AI Agent：
 
 ```
 帮我安装这个 skill：https://github.com/FantasyLu/senderos
@@ -111,18 +111,34 @@ Agent 会自动完成克隆、依赖安装和验证，无需手动操作。
 
 ### 方式二：手动安装
 
+<details>
+<summary>展开查看各 runtime 的 skills 目录</summary>
+
+| Runtime | 安装路径 |
+|---|---|
+| Claude Code | `~/.claude/skills/senderos/` |
+| Codex CLI | `~/.codex/skills/senderos/` |
+| Cursor | `~/.cursor/skills/senderos/` |
+| 其他 runtime | clone 到对应 runtime 的 `skills/` 目录 |
+
+</details>
+
 ```bash
-# 1. 克隆到全局 skill 目录
-git clone https://github.com/FantasyLu/senderos.git ~/.config/codewiz/skills/senderos
+# 1. 克隆到对应 runtime 的 skills 目录（以 Claude Code 为例）
+git clone https://github.com/FantasyLu/senderos.git ~/.claude/skills/senderos
 
 # 2. 安装 Python 依赖（epub/mobi 解析需要，地图渲染无需额外依赖）
 pip install ebooklib beautifulsoup4 mobi
 
-# 3. 重启 Codewiz，输入触发词「画路线」即可激活
+# 3. 重启 Agent，输入触发词「画路线」即可激活
 ```
 
 > macOS 系统 Python 可能需要加 `--break-system-packages`：
 > `pip install ebooklib beautifulsoup4 mobi --break-system-packages`
+
+### 方式三：直接粘贴使用
+
+即使你的 runtime 不支持 skills 自动加载，也可以直接把 `SKILL.md` 的内容粘贴进对话——它本质就是一份 markdown 指令文件，粘贴即生效。
 
 ---
 
