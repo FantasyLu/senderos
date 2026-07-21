@@ -68,7 +68,46 @@
     flex-direction: column;
     flex-shrink: 0;
     overflow: hidden;
+    transition: width 0.25s ease;
+    position: relative;
   }
+  #sidebar.collapsed {
+    width: 0;
+    border-right: none;
+  }
+  #sidebar.collapsed #sidebar-header,
+  #sidebar.collapsed #timeline,
+  #sidebar.collapsed #route-mode-toggle,
+  #sidebar.collapsed #seq-controls {
+    display: none;
+  }
+  /* toggle 按钮：固定在 sidebar 右外侧 */
+  #sidebar-toggle-btn {
+    position: absolute;
+    right: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1100;
+    width: 28px;
+    height: 64px;
+    background: rgba(240, 232, 212, 0.95);
+    border: 1px solid #d4c4a0;
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #5a4030;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.12);
+    transition: background 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+  #sidebar-toggle-btn:hover { background: #e8d8b0; }
   #sidebar-header {
     padding: 12px 16px;
     background: #f0e8d4;
@@ -167,19 +206,53 @@
     background: rgba(250, 246, 238, 0.95);
     border: 1px solid #c4b090;
     border-radius: 6px;
-    padding: 12px 14px;
     font-size: 12px;
     line-height: 1.8;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     min-width: 160px;
+    overflow: hidden;
+    transition: min-width 0.2s;
   }
-  .legend-title {
-    font-weight: 700;
-    font-size: 13px;
-    color: #3a2a10;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
+  .legend-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px 12px;
+    background: #f0e8d4;
+    border: none;
     border-bottom: 1px solid #d4c090;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a2a10;
+    letter-spacing: 0.05em;
+    text-align: left;
+    border-radius: 0;
+  }
+  .legend-toggle-btn:hover { background: #e8d8b0; }
+  .legend-body {
+    padding: 10px 14px;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+    max-height: 400px;
+    overflow: hidden;
+  }
+  .legend.collapsed .legend-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .legend.collapsed {
+    min-width: 0;
+  }
+  .legend-title-arrow {
+    font-size: 10px;
+    margin-left: 6px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .legend.collapsed .legend-title-arrow {
+    transform: rotate(-90deg);
   }
   .legend-item {
     display: flex;
@@ -474,7 +547,8 @@
 <div id="main">
 
   <!-- 时间轴侧边栏 -->
-  <div id="sidebar">
+  <div id="sidebar" class="collapsed">
+    <button id="sidebar-toggle-btn" title="展开/收起时间轴">◀ 时间轴</button>
     <div id="sidebar-header">
       📍 行程时间轴
     </div>
@@ -2249,13 +2323,14 @@ function initStageSwitcher() {
   // ── 收起/展开 toggle 按钮（放在最左侧）──
   const toggleBtn = document.createElement('button');
   toggleBtn.id = 'stage-toggle-btn';
-  toggleBtn.textContent = '▾ 章节';
+  toggleBtn.textContent = '▸ 章节';
   toggleBtn.title = '收起/展开章节切换器';
   toggleBtn.addEventListener('click', () => {
     const collapsed = switcher.classList.toggle('collapsed');
     toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
   });
   switcher.appendChild(toggleBtn);
+  switcher.classList.add('collapsed'); // 默认收起
 
   // ── 「全部」按钮 ──
   const allBtn = document.createElement('button');
@@ -2319,30 +2394,38 @@ function showStageMarkers(indices) {
 // ── 图例 ──
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function() {
-  const div = L.DomUtil.create('div', 'legend');
+  const div = L.DomUtil.create('div', 'legend collapsed');
   div.innerHTML = `
-    <div class="legend-title">图例</div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#c0703a;"></div>
-      主要节点（多源确认）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#d4803a;"></div>
-      主要节点（单一来源）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#d4b040;"></div>
-      主要节点（推测 ?）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#c04020;"></div>
-      主要节点（存在矛盾 !）
-    </div>
-    <div class="legend-item">
-      <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
-      途经点
+    <button class="legend-toggle-btn" id="legend-toggle-btn">
+      图例<span class="legend-title-arrow">▾</span>
+    </button>
+    <div class="legend-body">
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#c0703a;"></div>
+        主要节点（多源确认）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#d4803a;"></div>
+        主要节点（单一来源）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#d4b040;"></div>
+        主要节点（推测 ?）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#c04020;"></div>
+        主要节点（存在矛盾 !）
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
+        途经点
+      </div>
     </div>
   `;
+  L.DomEvent.disableClickPropagation(div);
+  div.querySelector('#legend-toggle-btn').addEventListener('click', () => {
+    div.classList.toggle('collapsed');
+  });
   return div;
 };
 legend.addTo(map);
@@ -2365,6 +2448,22 @@ document.getElementById('btn-seq-pause').addEventListener('click', () => {
 document.getElementById('btn-seq-reset').addEventListener('click', () => {
   seqReset(WAYPOINTS);
 });
+
+// ── 时间轴侧边栏 toggle ──
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebar-toggle-btn');
+  function updateBtn() {
+    const collapsed = sidebar.classList.contains('collapsed');
+    btn.textContent = collapsed ? '▶ 时间轴' : '◀ 时间轴';
+    btn.style.right = collapsed ? '-28px' : '-28px';
+  }
+  btn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    updateBtn();
+  });
+  updateBtn(); // 初始状态同步
+})();
 
 // ── 时间轴事件绑定 ──
 document.querySelectorAll('.timeline-item').forEach(el => {
