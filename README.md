@@ -97,6 +97,41 @@ senderos/
 
 ---
 
+## 安装
+
+### 1. 克隆到 Codewiz skill 目录
+
+```bash
+git clone https://github.com/FantasyLu/senderos.git ~/.config/codewiz/skills/senderos
+```
+
+安装完成后重启 Codewiz，输入触发词（如「画路线」）即可激活。
+
+### 2. 安装 Python 依赖
+
+epub/mobi 解析需要以下依赖（坐标解析和地图渲染无需额外依赖）：
+
+```bash
+pip install ebooklib beautifulsoup4 mobi
+```
+
+> macOS 系统 Python 可能需要加 `--break-system-packages`：
+> ```bash
+> pip install ebooklib beautifulsoup4 mobi --break-system-packages
+> ```
+
+### 3. 验证安装
+
+```bash
+# 测试坐标解析（无需额外依赖）
+python ~/.config/codewiz/skills/senderos/scripts/geocode.py 撒马尔罕 昆明府
+
+# 测试 epub 解析
+python ~/.config/codewiz/skills/senderos/scripts/parse_ebook.py --help
+```
+
+---
+
 ## 快速使用
 
 ### 触发词
