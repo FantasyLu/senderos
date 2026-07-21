@@ -1,0 +1,19 @@
+# output/ 目录为本地生成产物，完整示例已保存在 examples/ 中
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# 大型电子书文件（examples 中的 epub 如需版本管理请手动 git add -f）
+*.epub
+*.mobi
+*.azw3
+*.azw
+*.pdf

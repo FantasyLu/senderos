@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Serif SC', 'Source Han Serif CN', Georgia, serif;
+    background: #f5f0e8;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── 顶部标题栏 ── */
+  #header {
+    background: #1a1a2e;
+    color: #e8d5b0;
+    padding: 14px 24px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  #header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #f0e0b0;
+  }
+  #header .subtitle {
+    font-size: 13px;
+    color: #a09070;
+    letter-spacing: 0.03em;
+  }
+  #header .stats {
+    margin-left: auto;
+    font-size: 12px;
+    color: #806850;
+    display: flex;
+    gap: 16px;
+  }
+  #header .stat-item { display: flex; gap: 5px; align-items: center; }
+  #header .stat-dot {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+  }
+
+  /* ── 主体布局 ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── 侧边栏：时间轴 ── */
+  #sidebar {
+    width: 280px;
+    background: #faf6ee;
+    border-right: 1px solid #d4c4a0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  #sidebar-header {
+    padding: 12px 16px;
+    background: #f0e8d4;
+    border-bottom: 1px solid #d4c4a0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #5a4030;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  #timeline {
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px 0;
+  }
+  .timeline-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .timeline-item:hover {
+    background: #ede4d0;
+    border-left-color: #c0903a;
+  }
+  .timeline-item.active {
+    background: #e8d8b0;
+    border-left-color: #c0703a;
+  }
+  .timeline-item .tl-num {
+    font-size: 11px;
+    color: #a08060;
+    font-family: 'Georgia', serif;
+    margin-bottom: 2px;
+  }
+  .timeline-item .tl-place {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2a1a0a;
+    margin-bottom: 2px;
+  }
+  .timeline-item .tl-time {
+    font-size: 11px;
+    color: #806040;
+  }
+  .timeline-item .tl-chapter {
+    font-size: 11px;
+    color: #9a7a50;
+    margin-top: 2px;
+    font-style: italic;
+  }
+  .timeline-item .tl-badge {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+  .tl-badge.inferred {
+    background: #f0d080;
+    color: #806020;
+  }
+  .tl-badge.pdf {
+    background: #c0d8f0;
+    color: #204060;
+  }
+  .tl-badge.web {
+    background: #c0e8c0;
+    color: #205020;
+  }
+  .timeline-divider {
+    padding: 6px 16px 2px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #b09060;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-top: 1px solid #e4d4b4;
+    margin-top: 4px;
+  }
+
+  /* ── 地图 ── */
+  #map {
+    flex: 1;
+    z-index: 1;
+  }
+
+  /* ── 图例 ── */
+  .legend {
+    background: rgba(250, 246, 238, 0.95);
+    border: 1px solid #c4b090;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    min-width: 160px;
+  }
+  .legend-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: #3a2a10;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #d4c090;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4a3a20;
+    margin: 3px 0;
+  }
+  .legend-marker {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+  }
+  .legend-line {
+    width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px;
+  }
+  .legend-line.dashed {
+    background: repeating-linear-gradient(
+      to right,
+      #9b30d0 0px, #9b30d0 5px,
+      transparent 5px, transparent 9px
+    );
+    height: 2px;
+  }
+
+  /* ── Popup 样式 ── */
+  .custom-popup .leaflet-popup-content-wrapper {
+    background: #faf6ee;
+    border: 1px solid #c4b080;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    padding: 0;
+    min-width: 280px;
+    max-width: 360px;
+  }
+  .custom-popup .leaflet-popup-content {
+    margin: 0;
+    width: 100% !important;
+    min-width: 280px;
+  }
+  .custom-popup .leaflet-popup-tip {
+    background: #c4b080;
+  }
+  .popup-header {
+    background: #1a1a2e;
+    color: #f0e0b0;
+    padding: 10px 14px;
+    border-radius: 7px 7px 0 0;
+  }
+  .popup-header .place-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .popup-header .place-modern {
+    font-size: 11px;
+    color: #a09070;
+    margin-top: 2px;
+  }
+  .popup-body { padding: 10px 14px; }
+  .visit-block {
+    padding: 8px 0;
+    border-bottom: 1px solid #e4d4b0;
+  }
+  .visit-block:last-child { border-bottom: none; }
+  .visit-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c0703a;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .visit-chapter {
+    font-size: 12px;
+    color: #4a6080;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .visit-time {
+    font-size: 12px;
+    color: #5a4030;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .visit-desc {
+    font-size: 13px;
+    color: #2a1a0a;
+    line-height: 1.5;
+  }
+  .visit-source-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+  .source-pdf { background: #c0d8f0; color: #204060; }
+  .source-web { background: #c0e8c0; color: #205020; }
+  .source-inferred { background: #f0d080; color: #806020; }
+  .source-user-pdf { background: #e0c0f0; color: #402060; }
+  .popup-footer {
+    padding: 6px 14px 10px;
+    font-size: 11px;
+    color: #a08060;
+    font-style: italic;
+  }
+
+  /* ── 途经点 popup（简版）── */
+  .transit-popup .leaflet-popup-content-wrapper {
+    background: #f5f0e8;
+    border: 1px solid #c0a878;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    min-width: 200px;
+  }
+  .transit-popup .leaflet-popup-content {
+    margin: 10px 14px;
+    font-size: 13px;
+    color: #4a3a20;
+    line-height: 1.6;
+  }
+
+  /* ── 响应式 ── */
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #header h1 { font-size: 16px; }
+  }
+
+  /* ── 置信度标记 ── */
+  .tl-conf {
+    display: inline-block;
+    font-size: 10px;
+    width: 14px; height: 14px; line-height: 14px;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 3px;
+  }
+  .conf-confirmed  { background: #c0e8c0; color: #205020; }
+  .conf-single     { background: #f0e080; color: #806020; }
+  .conf-inferred   { background: #e0d0f0; color: #604080; }
+  .conf-disputed   { background: #f0c0b0; color: #802010; }
+
+  /* ── 阶段切换器 ── */
+  #stage-switcher {
+    display: none;  /* 默认隐藏，USE_STAGES=true 时由 JS 显示 */
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(26, 26, 46, 0.92);
+    border-radius: 20px;
+    padding: 6px 10px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-width: 80vw;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  .stage-btn {
+    background: rgba(255,255,255,0.12);
+    color: #e8d5b0;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 3px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .stage-btn:hover  { background: rgba(255,255,255,0.22); }
+  .stage-btn.active { background: #c0703a; border-color: #e08050; color: #fff; }
+  .stage-btn.all    { background: rgba(255,255,255,0.18); }
+
+  /* ── 滚动条 ── */
+  #timeline::-webkit-scrollbar { width: 5px; }
+  #timeline::-webkit-scrollbar-track { background: #f0e8d4; }
+  #timeline::-webkit-scrollbar-thumb { background: #c4a870; border-radius: 3px; }
+
+  /* ── 路线模式切换器 ── */
+  #route-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 20px;
+    flex-shrink: 0;
+  }
+  #route-mode-toggle .rm-label {
+    font-size: 11px;
+    color: #806850;
+    white-space: nowrap;
+  }
+  .rm-btn {
+    background: rgba(255,255,255,0.08);
+    color: #c0a878;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .rm-btn:hover { background: rgba(255,255,255,0.16); color: #e8d5b0; }
+  .rm-btn.active { background: #c0703a; border-color: #e08050; color: #fff; }
+
+  /* 依次模式的播放控制条 */
+  #seq-controls {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+  }
+  #seq-controls.visible { display: flex; }
+  .seq-btn {
+    background: rgba(255,255,255,0.08);
+    color: #c0a878;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .seq-btn:hover { background: rgba(255,255,255,0.16); color: #e8d5b0; }
+  #seq-progress {
+    font-size: 11px;
+    color: #806850;
+    min-width: 48px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部标题栏 -->
+<div id="header">
+  <h1>{{TITLE}}</h1>
+  <span class="subtitle">{{SUBTITLE}}</span>
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-dot" style="background:#c0703a;"></span>
+      主要节点 {{MAJOR_COUNT}} 处
+    </div>
+    <div class="stat-item">
+      <span class="stat-dot" style="background:#8090a0; border: 1px solid #607080;"></span>
+      途经 {{TRANSIT_COUNT}} 处
+    </div>
+    <div class="stat-item">
+      <span class="stat-dot" style="background:#d4b040; border: 1px dashed #a08020;"></span>
+      推测 {{INFERRED_COUNT}} 处
+    </div>
+  </div>
+  <!-- 路线模式切换器 -->
+  <div id="route-mode-toggle">
+    <span class="rm-label">路线：</span>
+    <button class="rm-btn active" id="btn-mode-all">▶ 同时流动</button>
+    <button class="rm-btn" id="btn-mode-seq">⏩ 依次点亮</button>
+  </div>
+  <!-- 依次模式播放控制 -->
+  <div id="seq-controls">
+    <button class="seq-btn" id="btn-seq-pause">⏸ 暂停</button>
+    <button class="seq-btn" id="btn-seq-reset">↺ 重置</button>
+    <span id="seq-progress">0 / 0</span>
+  </div>
+</div>
+
+<!-- 主体 -->
+<div id="main">
+
+  <!-- 时间轴侧边栏 -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      📍 行程时间轴
+    </div>
+    <div id="timeline">
+      <!-- 由 render_map.py 注入 -->
+      {{TIMELINE_HTML}}
+    </div>
+  </div>
+
+  <!-- 地图容器 -->
+  <div id="map" style="position:relative;">
+    <!-- 阶段切换器（USE_STAGES=true 时激活）-->
+    <div id="stage-switcher"></div>
+  </div>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+
+<script>
+// ── 数据（由 render_map.py 注入）──
+const WAYPOINTS = {{WAYPOINTS_JSON}};
+const MAP_CENTER = {{MAP_CENTER}};
+const MAP_ZOOM = {{MAP_ZOOM}};
+const USE_CLUSTER = {{USE_CLUSTER}};
+const USE_STAGES = {{USE_STAGES}};
+const STAGES_DATA = {{STAGES_DATA}};
+
+// ── 初始化地图 ──
+const map = L.map('map', {
+  center: MAP_CENTER,
+  zoom: MAP_ZOOM,
+  zoomControl: true,
+});
+
+// 底图：OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18,
+}).addTo(map);
+
+// ── 图标定义 ──
+function makeIcon(color, size, opacity, badge) {
+  size = size || 12;
+  opacity = opacity || 1;
+  // badge: null | '?' (inferred) | '!' (disputed)
+  let badgeSvg = '';
+  if (badge === '?') {
+    badgeSvg = `<text x="${size+7}" y="5" font-size="8" fill="#806020" font-weight="bold" text-anchor="middle">?</text>`;
+  } else if (badge === '!') {
+    badgeSvg = `<text x="${size+7}" y="5" font-size="8" fill="#c03010" font-weight="bold" text-anchor="middle">!</text>`;
+  }
+  const totalW = size + 8 + (badge ? 6 : 0);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${size+12}" viewBox="0 0 ${totalW} ${size+12}">
+      <circle cx="${(size+8)/2}" cy="${(size+8)/2}" r="${size/2}" fill="${color}" stroke="white" stroke-width="2" opacity="${opacity}"/>
+      <polygon points="${(size+8)/2-4},${size+4} ${(size+8)/2+4},${size+4} ${(size+8)/2},${size+10}" fill="${color}" opacity="${opacity}"/>
+      ${badgeSvg}
+    </svg>
+  `;
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize: [totalW, size+12],
+    iconAnchor: [(size+8)/2, size+12],
+    popupAnchor: [0, -(size+12)],
+  });
+}
+
+const ICONS = {
+  major_confirmed:     makeIcon('#c0703a', 20),          // 深橙，多源确认
+  major_single:        makeIcon('#d4803a', 20),          // 橙色，单一来源
+  major_inferred:      makeIcon('#d4b040', 20, 1, '?'),  // 金色+?，推测
+  major_disputed:      makeIcon('#c04020', 20, 1, '!'),  // 红橙+!，存在矛盾
+  transit:             makeIcon('#6080a0', 13),
+  transit_inferred:    makeIcon('#a0a060', 13, 0.8),
+};
+
+function getIcon(wp) {
+  if (wp.layer === 'transit') {
+    return wp.visits.every(v => v.source === 'inferred') ? ICONS.transit_inferred : ICONS.transit;
+  }
+  // major
+  const conf = wp.confidence || (wp.visits.every(v => v.source === 'inferred') ? 'inferred' : 'single_source');
+  return ICONS['major_' + conf] || ICONS.major_confirmed;
+}
+
+// ── 来源徽章 HTML ──
+function sourceBadge(source) {
+  const map = {
+    'pdf':        ['source-pdf', '📄 PDF资料'],
+    'user-pdf':   ['source-user-pdf', '📎 用户提供'],
+    'web':        ['source-web', '🌐 网络检索'],
+    'inferred':   ['source-inferred', '💭 推测'],
+  };
+  const [cls, label] = map[source] || ['source-web', source];
+  return `<span class="visit-source-badge ${cls}">${label}</span>`;
+}
+
+// ── 置信度标注 ──
+function confidenceBadge(confidence) {
+  const map = {
+    'confirmed':     ['✓ 多源确认', '#c0e8c0', '#205020'],
+    'single_source': ['◎ 单一来源', '#f0e080', '#806020'],
+    'inferred':      ['? 推测',     '#e0d0f0', '#604080'],
+    'disputed':      ['! 存在矛盾', '#f0c0b0', '#802010'],
+  };
+  const [label, bg, color] = map[confidence] || ['◎ 单一来源', '#f0e080', '#806020'];
+  return `<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:${bg};color:${color};margin-left:4px;">${label}</span>`;
+}
+
+// ── 构建 Popup HTML ──
+function buildPopup(wp) {
+  const isTransit = wp.layer === 'transit';
+
+  if (isTransit) {
+    const v = wp.visits[0];
+    return `
+      <div>
+        <strong>${wp.place_raw}</strong>
+        ${wp.place_modern !== wp.place_raw ? `（${wp.place_modern}）` : ''}
+        <br>
+        ${v.chapter_title ? `<span style="color:#4a6080;font-size:11px;">📖 ${v.chapter_title}</span><br>` : ''}
+        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 ${v.time_raw}</span><br>` : ''}
+        <span style="font-size:11px;color:#806050;">途经</span>
+        ${sourceBadge(v.source || 'web')}
+      </div>
+    `;
+  }
+
+  // 主要节点
+  const conf = wp.confidence || 'single_source';
+  let visitsHtml = '';
+  wp.visits.forEach((v, i) => {
+    visitsHtml += `
+      <div class="visit-block">
+        <div class="visit-num">第${i+1}次到访</div>
+        ${v.chapter_title ? `<div class="visit-chapter">📖 ${v.chapter_title}</div>` : ''}
+        ${v.time_raw ? `<div class="visit-time">🕐 ${v.time_raw}${v.time_note ? `<span style="color:#a08060;font-size:10px;">（${v.time_note}）</span>` : ''}</div>` : ''}
+        ${v.duration ? `<div class="visit-time">⏱ 停留：${v.duration}</div>` : ''}
+        <div class="visit-desc">${v.description}</div>
+        ${sourceBadge(v.source || 'web')}
+        ${v.verification_status === 'sentence_not_found' ? '<span style="font-size:10px;color:#c03010;margin-left:4px;">⚠️ 原文句未找到</span>' : ''}
+      </div>
+    `;
+  });
+
+  return `
+    <div class="popup-header">
+      <div class="place-name">${wp.place_raw} ${confidenceBadge(conf)}</div>
+      ${wp.place_modern !== wp.place_raw ? `<div class="place-modern">${wp.place_modern}</div>` : ''}
+    </div>
+    <div class="popup-body">${visitsHtml}</div>
+    ${wp.coord_note ? `<div class="popup-footer">⚠️ ${wp.coord_note}</div>` : ''}
+  `;
+}
+
+// ── 绘制路线连线 ──
+// ─────────────────────────────────────────────
+//  状态
+// ─────────────────────────────────────────────
+let routeLayers  = [];      // 当前所有路线图层
+let routeMode    = 'all';   // 'all' | 'seq'
+let seqIndex     = 0;       // 已点亮到第几段（0-based，已画 seqIndex 段）
+let seqTimer     = null;
+let seqPaused    = false;
+let seqReady     = false;   // 重置后等待用户触发
+
+const ANT_OPTIONS_SOLID = {
+  delay: 1500,
+  weight: 2.5,
+  color: '#1a6fd4',
+  pulseColor: '#ffffff',
+  opacity: 0.7,
+  dashArray: [10, 24],
+  paused: false,
+  reverse: false,
+};
+const ANT_OPTIONS_DASHED = {
+  delay: 1500,
+  weight: 1.5,
+  color: '#9b30d0',
+  pulseColor: '#ffffff',
+  opacity: 0.55,
+  dashArray: [6, 20],
+  paused: false,
+  reverse: false,
+};
+
+function getValidWps(waypoints) {
+  return waypoints.filter(wp => wp.lat && wp.lon);
+}
+
+function makeAntSeg(a, b) {
+  const isDashed = (a.route_to_next === 'dashed')
+    || (a.visits && a.visits[0]?.source === 'inferred')
+    || (b.visits && b.visits[0]?.source === 'inferred');
+  const opts = isDashed ? { ...ANT_OPTIONS_DASHED } : { ...ANT_OPTIONS_SOLID };
+  return L.polyline.antPath([[a.lat, a.lon], [b.lat, b.lon]], opts);
+}
+
+// 清空所有路线图层
+function clearRoutes() {
+  routeLayers.forEach(l => { try { map.removeLayer(l); } catch(e) {} });
+  routeLayers = [];
+}
+
+// ── 模式一：同时流动 ──
+function drawAll(waypoints) {
+  clearRoutes();
+  seqStop();
+  const wps = getValidWps(waypoints);
+  for (let i = 0; i < wps.length - 1; i++) {
+    const seg = makeAntSeg(wps[i], wps[i+1]);
+    seg.addTo(map);
+    routeLayers.push(seg);
+  }
+}
+
+// ── 模式二：依次点亮 ──
+function seqStop() {
+  if (seqTimer) { clearInterval(seqTimer); seqTimer = null; }
+  seqPaused = false;
+  seqReady  = false;
+}
+
+function seqReset(waypoints) {
+  seqStop();
+  clearRoutes();
+  seqIndex  = 0;
+  seqReady  = true;
+  seqPaused = false;
+  updateSeqProgress(waypoints);
+  updateSeqButtons();
+}
+
+function seqStart(waypoints) {
+  seqReady  = false;
+  seqPaused = false;
+  const wps = getValidWps(waypoints);
+  const total = wps.length - 1;
+
+  if (seqIndex >= total) {
+    // 已全部显示，重置后重播
+    seqReset(waypoints);
+    setTimeout(() => seqStart(waypoints), 100);
+    return;
+  }
+
+  seqTimer = setInterval(() => {
+    if (seqIndex >= total) {
+      clearInterval(seqTimer);
+      seqTimer = null;
+      updateSeqButtons();
+      return;
+    }
+    const seg = makeAntSeg(wps[seqIndex], wps[seqIndex + 1]);
+    seg.addTo(map);
+    routeLayers.push(seg);
+    seqIndex++;
+    updateSeqProgress(waypoints);
+    updateSeqButtons();
+  }, 600);
+
+  updateSeqButtons();
+}
+
+function seqPauseToggle(waypoints) {
+  if (!seqTimer && !seqPaused && !seqReady) {
+    // 还没开始，启动
+    seqStart(waypoints);
+    return;
+  }
+  if (seqTimer) {
+    // 正在播放 → 暂停
+    clearInterval(seqTimer);
+    seqTimer  = null;
+    seqPaused = true;
+  } else if (seqPaused) {
+    // 已暂停 → 继续
+    seqPaused = false;
+    seqStart(waypoints);
+  }
+  updateSeqButtons();
+}
+
+// 时间轴联动：点击第 N 个 major 节点 → 显示到该节点为止的所有路段
+function seqJumpTo(waypointIdx, waypoints) {
+  if (routeMode !== 'seq') return;
+  seqStop();
+  clearRoutes();
+  const wps = getValidWps(waypoints);
+  // 找到 waypointIdx 在 validWps 中的位置
+  const targetPos = wps.findIndex(
+    wp => wp.order === waypoints[waypointIdx]?.order
+  );
+  const drawTo = targetPos < 0 ? 0 : targetPos;
+  for (let i = 0; i < drawTo; i++) {
+    const seg = makeAntSeg(wps[i], wps[i+1]);
+    seg.addTo(map);
+    routeLayers.push(seg);
+  }
+  seqIndex  = drawTo;
+  seqPaused = true;   // 暂停，等用户选择继续
+  updateSeqProgress(waypoints);
+  updateSeqButtons();
+}
+
+function updateSeqProgress(waypoints) {
+  const wps   = getValidWps(waypoints);
+  const total = Math.max(wps.length - 1, 1);
+  document.getElementById('seq-progress').textContent = `${seqIndex} / ${total}`;
+}
+
+function updateSeqButtons() {
+  const pauseBtn = document.getElementById('btn-seq-pause');
+  if (!pauseBtn) return;
+  if (seqTimer) {
+    pauseBtn.textContent = '⏸ 暂停';
+  } else if (seqPaused) {
+    pauseBtn.textContent = '▶ 继续';
+  } else if (seqReady) {
+    pauseBtn.textContent = '▶ 播放';
+  } else {
+    pauseBtn.textContent = '▶ 播放';
+  }
+}
+
+// ── 模式切换入口 ──
+function setRouteMode(mode, waypoints) {
+  routeMode = mode;
+  // 更新按钮高亮
+  document.getElementById('btn-mode-all').classList.toggle('active', mode === 'all');
+  document.getElementById('btn-mode-seq').classList.toggle('active', mode === 'seq');
+  // 显隐播放控制
+  const seqCtrl = document.getElementById('seq-controls');
+  seqCtrl.classList.toggle('visible', mode === 'seq');
+
+  if (mode === 'all') {
+    drawAll(waypoints);
+  } else {
+    seqReset(waypoints);
+    seqStart(waypoints);
+  }
+}
+
+// 初始绘制（兼容旧接口）
+function drawRoutes(waypoints) {
+  drawAll(waypoints);
+}
+
+// ── 绘制图钉 ──
+const markers = {};
+// markercluster 组（USE_CLUSTER 时使用）
+let clusterGroup = null;
+
+function drawMarkers(waypoints) {
+  if (USE_CLUSTER) {
+    clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 50,
+      showCoverageOnHover: false,
+    });
+  }
+
+  waypoints.forEach((wp, idx) => {
+    if (!wp.lat || !wp.lon) return;
+
+    const icon = getIcon(wp);
+    const marker = L.marker([wp.lat, wp.lon], { icon })
+      .bindPopup(buildPopup(wp), {
+        className: wp.layer === 'transit' ? 'transit-popup' : 'custom-popup',
+        maxWidth: 360,
+        minWidth: 280,
+      });
+
+    marker.on('click', () => { highlightTimeline(idx); });
+    markers[idx] = marker;
+
+    if (USE_CLUSTER) {
+      clusterGroup.addLayer(marker);
+    } else {
+      marker.addTo(map);
+    }
+  });
+
+  if (USE_CLUSTER && clusterGroup) {
+    map.addLayer(clusterGroup);
+  }
+}
+
+// ── 时间轴点击定位 ──
+function flyToWaypoint(idx) {
+  const wp = WAYPOINTS[idx];
+  if (!wp || !wp.lat || !wp.lon) return;
+  map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 9), { duration: 0.8 });
+  setTimeout(() => {
+    if (markers[idx]) markers[idx].openPopup();
+  }, 900);
+  highlightTimeline(idx);
+}
+
+function highlightTimeline(idx) {
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`.timeline-item[data-idx="${idx}"]`);
+  if (el) {
+    el.classList.add('active');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ── 阶段切换器 ──
+function initStageSwitcher() {
+  if (!USE_STAGES || !STAGES_DATA || STAGES_DATA.length === 0) return;
+
+  const switcher = document.getElementById('stage-switcher');
+  switcher.style.display = 'flex';
+
+  // 「全部」按钮
+  const allBtn = document.createElement('button');
+  allBtn.className = 'stage-btn all active';
+  allBtn.textContent = '全部';
+  allBtn.addEventListener('click', () => {
+    showAllMarkers();
+    setActiveStageBtn(allBtn);
+  });
+  switcher.appendChild(allBtn);
+
+  // 各阶段按钮
+  STAGES_DATA.forEach((stage, si) => {
+    const btn = document.createElement('button');
+    btn.className = 'stage-btn';
+    btn.textContent = stage.label;
+    btn.addEventListener('click', () => {
+      showStageMarkers(stage.indices);
+      setActiveStageBtn(btn);
+    });
+    switcher.appendChild(btn);
+  });
+}
+
+function setActiveStageBtn(activeBtn) {
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+  activeBtn.classList.add('active');
+}
+
+function showAllMarkers() {
+  Object.values(markers).forEach(m => {
+    if (USE_CLUSTER) {
+      if (!clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
+    } else {
+      if (!map.hasLayer(m)) m.addTo(map);
+    }
+  });
+}
+
+function showStageMarkers(indices) {
+  const idxSet = new Set(indices);
+  Object.entries(markers).forEach(([idx, m]) => {
+    const show = idxSet.has(parseInt(idx));
+    if (USE_CLUSTER) {
+      if (show && !clusterGroup.hasLayer(m)) clusterGroup.addLayer(m);
+      if (!show && clusterGroup.hasLayer(m)) clusterGroup.removeLayer(m);
+    } else {
+      if (show && !map.hasLayer(m)) m.addTo(map);
+      if (!show && map.hasLayer(m)) map.removeLayer(m);
+    }
+  });
+  // 自动缩放到该阶段
+  const pts = indices
+    .filter(i => WAYPOINTS[i] && WAYPOINTS[i].lat && WAYPOINTS[i].lon)
+    .map(i => [WAYPOINTS[i].lat, WAYPOINTS[i].lon]);
+  if (pts.length > 0) {
+    map.fitBounds(pts, { padding: [40, 40], maxZoom: 10 });
+  }
+}
+
+// ── 图例 ──
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <div class="legend-title">图例</div>
+    <div class="legend-item">
+      <div class="legend-marker" style="background:#c0703a;"></div>
+      主要节点（多源确认）
+    </div>
+    <div class="legend-item">
+      <div class="legend-marker" style="background:#d4803a;"></div>
+      主要节点（单一来源）
+    </div>
+    <div class="legend-item">
+      <div class="legend-marker" style="background:#d4b040;"></div>
+      主要节点（推测 ?）
+    </div>
+    <div class="legend-item">
+      <div class="legend-marker" style="background:#c04020;"></div>
+      主要节点（存在矛盾 !）
+    </div>
+    <div class="legend-item">
+      <div class="legend-marker" style="background:#6080a0; border:1px solid #407090;"></div>
+      途经点
+    </div>
+    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px;">
+    <div class="legend-item">
+      <div class="legend-line" style="background:#1a6fd4;"></div>
+      有记载路线
+    </div>
+    <div class="legend-item">
+      <div class="legend-line dashed"></div>
+      推测路径（直线）
+    </div>
+    </div>
+    <div style="margin-top:8px; border-top:1px solid #d4c090; padding-top:8px; font-size:11px; color:#806040;">
+      <div>📄 PDF资料  📎 用户提供</div>
+      <div>🌐 网络检索  💭 推测</div>
+    </div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// ── 执行绘制 ──
+drawRoutes(WAYPOINTS);
+drawMarkers(WAYPOINTS);
+initStageSwitcher();
+
+// ── 路线模式切换按钮绑定 ──
+document.getElementById('btn-mode-all').addEventListener('click', () => {
+  setRouteMode('all', WAYPOINTS);
+});
+document.getElementById('btn-mode-seq').addEventListener('click', () => {
+  setRouteMode('seq', WAYPOINTS);
+});
+document.getElementById('btn-seq-pause').addEventListener('click', () => {
+  seqPauseToggle(WAYPOINTS);
+});
+document.getElementById('btn-seq-reset').addEventListener('click', () => {
+  seqReset(WAYPOINTS);
+});
+
+// ── 时间轴事件绑定 ──
+document.querySelectorAll('.timeline-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const idx = parseInt(el.dataset.idx);
+    flyToWaypoint(idx);
+    seqJumpTo(idx, WAYPOINTS);  // 依次模式联动
+  });
+});
+
+// ── 自动适应视图 ──
+const validPoints = WAYPOINTS.filter(wp => wp.lat && wp.lon).map(wp => [wp.lat, wp.lon]);
+if (validPoints.length > 1) {
+  map.fitBounds(validPoints, { padding: [40, 40] });
+} else if (validPoints.length === 1) {
+  map.setView(validPoints[0], 8);
+}
+</script>
+</body>
+</html>
