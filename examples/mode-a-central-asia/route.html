@@ -69,7 +69,6 @@
     flex-shrink: 0;
     overflow: hidden;
     transition: width 0.25s ease;
-    position: relative;
   }
   #sidebar.collapsed {
     width: 0;
@@ -81,10 +80,10 @@
   #sidebar.collapsed #seq-controls {
     display: none;
   }
-  /* toggle 按钮：固定在 sidebar 右外侧 */
+  /* toggle 按钮：绝对定位在 #main 左边缘，跟随 sidebar 宽度 */
   #sidebar-toggle-btn {
     position: absolute;
-    right: -28px;
+    left: 280px;   /* 展开时 = sidebar 宽度 */
     top: 50%;
     transform: translateY(-50%);
     z-index: 1100;
@@ -103,11 +102,15 @@
     writing-mode: vertical-rl;
     letter-spacing: 0.1em;
     box-shadow: 2px 0 6px rgba(0,0,0,0.12);
-    transition: background 0.15s;
+    transition: left 0.25s ease, background 0.15s;
     padding: 0;
     line-height: 1;
   }
   #sidebar-toggle-btn:hover { background: #e8d8b0; }
+  #sidebar.collapsed ~ #sidebar-toggle-btn,
+  #main.sidebar-collapsed #sidebar-toggle-btn {
+    left: 0;
+  }
   #sidebar-header {
     padding: 12px 16px;
     background: #f0e8d4;
@@ -544,11 +547,10 @@
 </div>
 
 <!-- 主体 -->
-<div id="main">
+<div id="main" style="position:relative;">
 
   <!-- 时间轴侧边栏 -->
   <div id="sidebar" class="collapsed">
-    <button id="sidebar-toggle-btn" title="展开/收起时间轴">◀ 时间轴</button>
     <div id="sidebar-header">
       📍 行程时间轴
     </div>
@@ -824,6 +826,9 @@
 </div>
     </div>
   </div>
+
+  <!-- 时间轴 toggle 按钮（在 sidebar 外，避免 overflow:hidden 裁切）-->
+  <button id="sidebar-toggle-btn" title="展开/收起时间轴">▶ 时间轴</button>
 
   <!-- 地图容器 -->
   <div id="map" style="position:relative;">
@@ -2456,13 +2461,13 @@ document.getElementById('btn-seq-reset').addEventListener('click', () => {
   function updateBtn() {
     const collapsed = sidebar.classList.contains('collapsed');
     btn.textContent = collapsed ? '▶ 时间轴' : '◀ 时间轴';
-    btn.style.right = collapsed ? '-28px' : '-28px';
+    btn.style.left = collapsed ? '0' : '280px';
   }
   btn.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     updateBtn();
   });
-  updateBtn(); // 初始状态同步
+  updateBtn();
 })();
 
 // ── 时间轴事件绑定 ──
