@@ -668,20 +668,12 @@ function buildPopup(wp) {
 // ─────────────────────────────────────────────
 //  状态
 // ─────────────────────────────────────────────
-let routeLayers  = [];      // 当前所有已完成的路线图层
+let routeLayers  = [];      // 当前所有路线图层
 let routeMode    = 'all';   // 'all' | 'seq'
-let seqIndex     = 0;       // 已完成动画的段数（0-based）
-let seqTimer     = null;    // 仅兼容用，seq 模式不再使用
+let seqIndex     = 0;       // 已点亮到第几段（0-based，已画 seqIndex 段）
+let seqTimer     = null;
 let seqPaused    = false;
 let seqReady     = false;   // 重置后等待用户触发
-
-// 依次点亮：单段动画状态
-let _seqRafId    = null;    // requestAnimationFrame id
-let _seqAnimLine = null;    // 当前正在生长的临时 polyline
-
-// 每段动画时长（ms）。两点间实际地理距离越长速度越快，
-// 通过 clamp 保证最短 400ms 最长 1800ms。
-const SEG_DURATION_BASE = 800;  // ms，中等距离参考值（~1000km）
 
 const ANT_OPTIONS_SOLID = {
   delay: 1500,
@@ -734,32 +726,9 @@ function drawAll(waypoints) {
   }
 }
 
-// ── 模式二：依次点亮（rAF 驱动逐段动画）──
-
-// 计算两点间大圆距离（km），用于估算动画时长
-function _haversineKm(a, b) {
-  const R = 6371;
-  const dLat = (b[0] - a[0]) * Math.PI / 180;
-  const dLon = (b[1] - a[1]) * Math.PI / 180;
-  const s = Math.sin(dLat/2)**2 +
-            Math.cos(a[0]*Math.PI/180) * Math.cos(b[0]*Math.PI/180) * Math.sin(dLon/2)**2;
-  return R * 2 * Math.asin(Math.sqrt(s));
-}
-
-// 线性插值
-function _lerp(a, b, t) {
-  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-}
-
-// easeInOut 缓动（视觉上起步和停止更自然）
-function _ease(t) {
-  return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
-}
-
+// ── 模式二：依次点亮 ──
 function seqStop() {
-  if (_seqRafId) { cancelAnimationFrame(_seqRafId); _seqRafId = null; }
-  if (seqTimer)  { clearInterval(seqTimer); seqTimer = null; }
-  if (_seqAnimLine) { try { map.removeLayer(_seqAnimLine); } catch(e){} _seqAnimLine = null; }
+  if (seqTimer) { clearInterval(seqTimer); seqTimer = null; }
   seqPaused = false;
   seqReady  = false;
 }
@@ -774,56 +743,6 @@ function seqReset(waypoints) {
   updateSeqButtons();
 }
 
-// 动画绘制第 idx 段（wps[idx] → wps[idx+1]），完成后回调 onDone
-function _animateSegment(wps, idx, onDone) {
-  const a = [wps[idx].lat,     wps[idx].lon];
-  const b = [wps[idx+1].lat,   wps[idx+1].lon];
-  const isDashed = (wps[idx].route_to_next === 'dashed')
-    || (wps[idx].visits   && wps[idx].visits[0]?.source === 'inferred')
-    || (wps[idx+1].visits && wps[idx+1].visits[0]?.source === 'inferred');
-
-  // 动画时长按距离缩放，限制在 300–2000ms
-  const km = _haversineKm(a, b);
-  const duration = Math.min(2000, Math.max(300, SEG_DURATION_BASE * km / 1000));
-
-  // 生长线样式（与 antPath 颜色保持一致）
-  const growColor  = isDashed ? '#9b30d0' : '#1a6fd4';
-  const growWeight = isDashed ? 1.5 : 2.5;
-
-  // 创建初始为单点的临时 polyline
-  _seqAnimLine = L.polyline([a, a], {
-    color: growColor,
-    weight: growWeight,
-    opacity: isDashed ? 0.55 : 0.75,
-    dashArray: isDashed ? '6, 12' : null,
-  }).addTo(map);
-
-  const startTime = performance.now();
-
-  function frame(now) {
-    const elapsed = now - startTime;
-    const t = Math.min(elapsed / duration, 1);
-    const et = _ease(t);
-    const mid = _lerp(a, b, et);
-    _seqAnimLine.setLatLngs([a, mid]);
-
-    if (t < 1) {
-      _seqRafId = requestAnimationFrame(frame);
-    } else {
-      // 动画结束：移除临时线，换成正式 antPath
-      try { map.removeLayer(_seqAnimLine); } catch(e) {}
-      _seqAnimLine = null;
-      _seqRafId = null;
-      const seg = makeAntSeg(wps[idx], wps[idx+1]);
-      seg.addTo(map);
-      routeLayers.push(seg);
-      onDone();
-    }
-  }
-
-  _seqRafId = requestAnimationFrame(frame);
-}
-
 function seqStart(waypoints) {
   seqReady  = false;
   seqPaused = false;
@@ -836,51 +755,42 @@ function seqStart(waypoints) {
     return;
   }
 
-  function next() {
-    if (seqPaused || seqIndex >= total) {
+  seqTimer = setInterval(() => {
+    if (seqIndex >= total) {
+      clearInterval(seqTimer);
+      seqTimer = null;
       updateSeqButtons();
       return;
     }
-
+    const seg = makeAntSeg(wps[seqIndex], wps[seqIndex + 1]);
+    seg.addTo(map);
+    routeLayers.push(seg);
+    seqIndex++;
+    updateSeqProgress(waypoints);
+    updateSeqButtons();
     // 自适应视图：已点亮节点全部纳入视野
-    const visiblePts = wps.slice(0, seqIndex + 2)
+    const visiblePts = wps.slice(0, seqIndex + 1)
       .filter(wp => wp.lat && wp.lon)
       .map(wp => [wp.lat, wp.lon]);
     if (visiblePts.length >= 2) {
       map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.4 });
     }
-
-    _animateSegment(wps, seqIndex, () => {
-      seqIndex++;
-      updateSeqProgress(waypoints);
-      updateSeqButtons();
-      if (!seqPaused && seqIndex < total) {
-        // 每段之间短暂停顿（让用户看清落点），再画下一段
-        setTimeout(next, 150);
-      } else {
-        updateSeqButtons();
-      }
-    });
-  }
+  }, 800);
 
   updateSeqButtons();
-  next();
 }
 
 function seqPauseToggle(waypoints) {
-  if (!_seqRafId && !seqPaused && !seqReady) {
+  if (!seqTimer && !seqPaused && !seqReady) {
     seqStart(waypoints);
     return;
   }
-  if (_seqRafId || _seqAnimLine) {
-    // 正在动画中 → 暂停：取消 rAF，临时线保留在当前位置
-    cancelAnimationFrame(_seqRafId);
-    _seqRafId = null;
+  if (seqTimer) {
+    clearInterval(seqTimer);
+    seqTimer  = null;
     seqPaused = true;
   } else if (seqPaused) {
-    // 已暂停 → 继续：从当前 seqIndex 重新开始（放弃未完成的半段，重画该段）
     seqPaused = false;
-    if (_seqAnimLine) { try { map.removeLayer(_seqAnimLine); } catch(e){} _seqAnimLine = null; }
     seqStart(waypoints);
   }
   updateSeqButtons();
