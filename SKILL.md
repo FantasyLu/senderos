@@ -5,7 +5,7 @@ description: |
   支持两种模式：
   (A) PDF 解析模式 — 用户上传游记/传记 PDF，自动提取地名、时间、行为，绘制路线图；
   (B) 人物检索模式 — 用户指定人物（历史或现代），可辅以 PDF 资料，AI 主动检索行程信息后绘图。
-  地图特性：OpenStreetMap 底图、两层图钉（主要节点/途经点）、实线/虚线路径区分已知与推测、图钉 Popup 显示章节来源+时间+描述、左侧时间轴侧边栏。
+  地图特性：OpenStreetMap 底图、两层图钉（主要节点/途经点）、流动路径动画、图钉 Popup 显示章节来源+到达时间+停留时长+描述、左侧时间轴侧边栏。
   触发词：「画路线」「绘制行程」「画地图」「旅行轨迹」「路线图」「route map」「travel route」「行程地图」「人物路线」。
 ---
 
@@ -152,8 +152,9 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 | `layer` | `"major"` = 有明确停留/住宿/重要事件；`"transit"` = 仅路过提及 |
 | `confidence` | `"confirmed"` / `"single_source"` / `"inferred"` / `"disputed"`（见 Phase A-2.5）|
 | `route_to_next` | `"described"` = 原文有路线描述；`"straight"` = 无描述，地图画虚线直线 |
-| `time_raw` | 原文时间，**原样保留**，不改写 |
-| `time_note` | 仅在换算有把握（有明确年号/公历锚点）时填写，否则**留空字符串** |
+| `time_raw` | 到达时间，**原样保留原文**，不改写。如原文无明确到达时间则留空 |
+| `time_note` | 仅在换算有把握（有明确年号/公历锚点）时填写公历日期，否则**留空字符串** |
+| `duration` | 停留时长，原文有描述时填写（如「三日」「约两周」），无描述留空字符串 |
 | `source` | PDF 解析固定填 `"pdf"` |
 | `source_sentence` | **必填**，原文依据句子（≤100字），防止 AI 杜撰地点 |
 | `description` | 简述目标人物在此地的行为，≤50字，主语省略（默认为目标人物）|
@@ -467,12 +468,7 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 
 ### 路线样式
 
-| 条件 | 样式 |
-|------|------|
-| 原文有路线描述（`route_to_next: "described"`）| 实线，深棕色，2.5px |
-| 无路线描述（`route_to_next: "straight"`）| 虚线，棕褐色，1.5px |
-
-**路线只连接相邻的 major 节点**，transit 途经点不参与连线。
+所有相邻节点之间以流动动画路径连接，无实线/虚线区分。路线只连接有坐标的相邻节点（按 `order` 顺序）。
 
 ### 图钉 Popup（点击弹出）
 
@@ -484,23 +480,20 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 ━━━━━━━━━━━━━
 第1次到访
   📖 第三章·滇西之行
-  🕐 万历四十一年九月初一（约1613年10月）
+  🕐 到达：万历四十一年九月初一（约1613年10月）
   ⏱ 停留：三日
   出发，休整补给
-  [PDF资料]
 第2次到访
   📖 第十一章·返程记
-  🕐 十一月下旬
+  🕐 到达：十一月下旬
   返程途经
-  [网络检索]
 ```
-
-**每个 visit 块必须显示章节来源（Mode A）或信息来源（Mode B）。**
 
 ### 时间轴侧边栏
 
 - 仅显示 major 节点
 - 按章节/时间顺序排列
+- 每个节点显示：地名、到达时间（若有）、停留时长（若有）
 - 点击侧边栏条目 → 地图飞到对应地点并弹出 Popup
 - 多次到访标注「（N次到访）」
 

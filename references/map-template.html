@@ -159,6 +159,10 @@
   .timeline-item .tl-time {
     font-size: 11px;
     color: #806040;
+    margin-top: 1px;
+  }
+  .timeline-item .tl-duration {
+    color: #6a7050;
   }
   .timeline-item .tl-chapter {
     font-size: 11px;
@@ -705,10 +709,9 @@ function buildPopup(wp) {
         ${wp.place_modern !== wp.place_raw ? `（${wp.place_modern}）` : ''}
         <br>
         ${v.chapter_title ? `<span style="color:#4a6080;font-size:11px;">📖 ${v.chapter_title}</span><br>` : ''}
-        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 ${v.time_raw}${v.time_note ? `（${v.time_note}）` : ''}</span><br>` : ''}
+        ${v.time_raw ? `<span style="color:#5a4030;font-size:11px;">🕐 到达：${v.time_raw}${v.time_note ? `（${v.time_note}）` : ''}</span><br>` : ''}
         ${v.duration ? `<span style="color:#5a4030;font-size:11px;">⏱ 停留：${v.duration}</span><br>` : ''}
         <span style="font-size:11px;color:#806050;">途经</span>
-        ${sourceBadge(v.source || 'web')}
       </div>
     `;
   }
@@ -719,12 +722,11 @@ function buildPopup(wp) {
   wp.visits.forEach((v, i) => {
     visitsHtml += `
       <div class="visit-block">
-        <div class="visit-num">第${i+1}次到访</div>
+        ${wp.visits.length > 1 ? `<div class="visit-num">第${i+1}次到访</div>` : ''}
         ${v.chapter_title ? `<div class="visit-chapter">📖 ${v.chapter_title}</div>` : ''}
-        ${v.time_raw ? `<div class="visit-time">🕐 ${v.time_raw}${v.time_note ? `<span style="color:#a08060;font-size:10px;">（${v.time_note}）</span>` : ''}</div>` : ''}
+        ${v.time_raw ? `<div class="visit-time">🕐 到达：${v.time_raw}${v.time_note ? `<span style="color:#a08060;font-size:10px;">（${v.time_note}）</span>` : ''}</div>` : ''}
         ${v.duration ? `<div class="visit-time">⏱ 停留：${v.duration}</div>` : ''}
-        <div class="visit-desc">${v.description}</div>
-        ${sourceBadge(v.source || 'web')}
+        ${v.description ? `<div class="visit-desc">${v.description}</div>` : ''}
         ${v.verification_status === 'sentence_not_found' ? '<span style="font-size:10px;color:#c03010;margin-left:4px;">⚠️ 原文句未找到</span>' : ''}
       </div>
     `;

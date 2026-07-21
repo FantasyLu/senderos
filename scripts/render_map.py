@@ -175,13 +175,13 @@ def _build_timeline_html(waypoints: list[dict]) -> str:
         time_note = first_visit.get("time_note", "")
         duration  = first_visit.get("duration", "")
 
-        # 组合时间显示：原文时间（换算注释）
-        time_parts = []
+        # 到达时间行：原文时间（换算注）
+        arrive_line = ""
         if time_raw:
-            time_parts.append(time_raw + (f"（{time_note}）" if time_note else ""))
-        if duration:
-            time_parts.append(f"停留 {duration}")
-        time_display = "　".join(time_parts)  # 全角空格分隔
+            arrive_line = time_raw + (f"（{time_note}）" if time_note else "")
+
+        # 停留时长行
+        duration_line = f"停留 {duration}" if duration else ""
 
         unresolved_note = "" if wp.get("resolved") else ' <span style="color:#c05030;">⚠️坐标待确认</span>'
 
@@ -189,7 +189,8 @@ def _build_timeline_html(waypoints: list[dict]) -> str:
 <div class="timeline-item" data-idx="{idx}">
   <div class="tl-num">#{idx + 1} {visit_note}</div>
   <div class="tl-place">{place_display}{unresolved_note} <span class="tl-conf {conf_cls}" title="{confidence}">{conf_symbol}</span></div>
-  {f'<div class="tl-time">{time_display}</div>' if time_display else ''}
+  {f'<div class="tl-time tl-arrive">🕐 {arrive_line}</div>' if arrive_line else ''}
+  {f'<div class="tl-time tl-duration">⏱ {duration_line}</div>' if duration_line else ''}
   {f'<div class="tl-chapter">{chapter_title}</div>' if chapter_title and visit_count > 1 else ''}
 </div>''')
 
