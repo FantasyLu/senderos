@@ -339,11 +339,35 @@
     border-radius: 20px;
     padding: 6px 10px;
     display: flex;
+    align-items: center;
     gap: 6px;
     flex-wrap: wrap;
     max-width: 80vw;
     box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    transition: padding 0.2s;
   }
+  /* 收起时只显示 toggle 按钮，背景缩成小胶囊 */
+  #stage-switcher.collapsed {
+    padding: 4px 8px;
+    flex-wrap: nowrap;
+  }
+  #stage-switcher.collapsed .stage-btn {
+    display: none;
+  }
+  #stage-toggle-btn {
+    background: rgba(255,255,255,0.15);
+    color: #e8d5b0;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    user-select: none;
+  }
+  #stage-toggle-btn:hover { background: rgba(255,255,255,0.28); }
   .stage-btn {
     background: rgba(255,255,255,0.12);
     color: #e8d5b0;
@@ -900,7 +924,18 @@ function initStageSwitcher() {
   const switcher = document.getElementById('stage-switcher');
   switcher.style.display = 'flex';
 
-  // 「全部」按钮
+  // ── 收起/展开 toggle 按钮（放在最左侧）──
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'stage-toggle-btn';
+  toggleBtn.textContent = '▾ 章节';
+  toggleBtn.title = '收起/展开章节切换器';
+  toggleBtn.addEventListener('click', () => {
+    const collapsed = switcher.classList.toggle('collapsed');
+    toggleBtn.textContent = collapsed ? '▸ 章节' : '▾ 章节';
+  });
+  switcher.appendChild(toggleBtn);
+
+  // ── 「全部」按钮 ──
   const allBtn = document.createElement('button');
   allBtn.className = 'stage-btn all active';
   allBtn.textContent = '全部';
@@ -910,7 +945,7 @@ function initStageSwitcher() {
   });
   switcher.appendChild(allBtn);
 
-  // 各阶段按钮
+  // ── 各阶段按钮 ──
   STAGES_DATA.forEach((stage, si) => {
     const btn = document.createElement('button');
     btn.className = 'stage-btn';
