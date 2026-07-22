@@ -115,6 +115,8 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 
 对每个章节，**只提取目标人物的行程**，其他人物经过的地点忽略。提取结构化地理信息，**输出必须严格符合以下 JSON 格式**，不得自由发挥：
 
+**一章可以产出多个 waypoint**：若目标人物在同一章内移动至不同城市/地点，每个地点均单独建立节点，不要强行合并为一个，也不要只取最主要的一个。
+
 ```json
 {
   "chapter_num": 3,
@@ -162,6 +164,12 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 **layer 判断标准**：
 - `major`：住宿过夜 / 明确停留数日 / 发生重要事件（受病、遇盗、访古迹等）/ 作为出发或终点
 - `transit`：「经过」「路过」「望见」「途经」，无停留描述
+
+**多地点提取规则**：
+- 若章节内出现移动动词（「来到」「抵达」「离开X前往Y」「翌日到达」等），且目的地为不同城市/地点，则分别建立节点
+- 同一城市内的不同景点/街区**不拆分**（如在布哈拉游览三处清真寺，仍合并为一个布哈拉节点）
+- 火车/飞机途中无停留的中间站，标记 `layer: transit`，仍应建立节点
+- **判断依据必须是作者本人的一人称行为**（「我来到」「我们抵达」），背景叙事/历史介绍中提到的地名不建节点
 
 ---
 
@@ -211,6 +219,7 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
   → 保留第一次出现的坐标信息
   → 将每次到访的 visit 对象追加到 visits[] 数组中
   → visits 按章节顺序排列
+  ⚠️  只合并跨章节的同一城市重复访问；同一章内的不同城市节点不合并
   ↓
 坐标解析（调用 geocode.py）：
   python scripts/geocode.py 逐个地名解析
