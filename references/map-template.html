@@ -886,7 +886,7 @@ function drawAll(waypoints) {
 
 // ── 模式二：依次点亮 ──
 function seqStop() {
-  if (seqTimer) { clearInterval(seqTimer); seqTimer = null; }
+  if (seqTimer) { clearTimeout(seqTimer); seqTimer = null; }
   seqPaused = false;
   seqReady  = false;
 }
@@ -913,28 +913,42 @@ function seqStart(waypoints) {
     return;
   }
 
-  seqTimer = setInterval(() => {
+  function step() {
+    if (seqPaused || seqReady) return;
     if (seqIndex >= total) {
-      clearInterval(seqTimer);
       seqTimer = null;
       updateSeqButtons();
       return;
     }
+
+    // 画路段
     const seg = makeAntSeg(wps[seqIndex], wps[seqIndex + 1]);
     seg.addTo(map);
     routeLayers.push(seg);
     seqIndex++;
     updateSeqProgress(waypoints);
     updateSeqButtons();
-    // 自适应视图：已点亮节点全部纳入视野
-    const visiblePts = wps.slice(0, seqIndex + 1)
-      .filter(wp => wp.lat && wp.lon)
-      .map(wp => [wp.lat, wp.lon]);
-    if (visiblePts.length >= 2) {
-      map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.4 });
-    }
-  }, 800);
 
+    // 到达节点：飞过去 + 打开 popup + 时间轴高亮
+    const wp = wps[seqIndex];
+    if (wp && wp.lat && wp.lon) {
+      // 找到 wp 在 WAYPOINTS 中的原始下标（用于 marker 和 timeline）
+      const globalIdx = WAYPOINTS.findIndex(w => w.order === wp.order);
+      map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: 0.5 });
+      setTimeout(() => {
+        if (seqPaused || seqReady) return;
+        if (globalIdx >= 0 && markers[globalIdx]) markers[globalIdx].openPopup();
+        highlightTimeline(globalIdx);
+        // popup 停留 1.2 秒后继续下一步
+        seqTimer = setTimeout(step, 1200);
+      }, 600);
+    } else {
+      // 无坐标节点直接跳过，短暂停顿后继续
+      seqTimer = setTimeout(step, 400);
+    }
+  }
+
+  seqTimer = setTimeout(step, 0);
   updateSeqButtons();
 }
 
@@ -949,7 +963,7 @@ function seqPauseToggle(waypoints) {
     return;
   }
   if (seqTimer) {
-    clearInterval(seqTimer);
+    clearTimeout(seqTimer);
     seqTimer  = null;
     seqPaused = true;
   } else if (seqPaused) {
