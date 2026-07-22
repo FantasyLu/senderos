@@ -824,11 +824,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
     width: 0;
     border-right: none;
   }
-  #sidebar.collapsed #sidebar-header,
-  #sidebar.collapsed #timeline,
-  #sidebar.collapsed #route-mode-toggle,
-  #sidebar.collapsed #seq-controls {
-    display: none;
+   #sidebar.collapsed #sidebar-header,
+   #sidebar.collapsed #timeline {
+     display: none;
   }
   /* toggle 按钮：绝对定位在 #main 左边缘，跟随 sidebar 宽度 */
   #sidebar-toggle-btn {
@@ -1265,15 +1263,22 @@ svg.leaflet-image-layer.leaflet-interactive path {
   #timeline::-webkit-scrollbar-thumb { background: #c4a870; border-radius: 3px; }
 
   /* ── 路线模式切换器 ── */
+  /* 右侧功能区整体 */
+  #header-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
   #route-mode-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-left: 20px;
     flex-shrink: 0;
   }
   #route-mode-toggle .rm-label {
-    font-size: 11px;
+    font-size: 12px;
     color: #806850;
     white-space: nowrap;
   }
@@ -1282,8 +1287,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
     color: #c0a878;
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 12px;
-    padding: 3px 10px;
-    font-size: 11px;
+    padding: 5px 12px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.15s;
     white-space: nowrap;
@@ -1297,7 +1302,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     display: none;
     align-items: center;
     gap: 6px;
-    margin-left: 8px;
   }
   #seq-controls.visible { display: flex; }
   .seq-btn {
@@ -1305,15 +1309,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
     color: #c0a878;
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 10px;
-    padding: 2px 8px;
-    font-size: 11px;
+    padding: 5px 10px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.15s;
     font-family: inherit;
   }
   .seq-btn:hover { background: rgba(255,255,255,0.16); color: #e8d5b0; }
   #seq-progress {
-    font-size: 11px;
+    font-size: 12px;
     color: #806850;
     min-width: 48px;
     text-align: center;
@@ -1343,19 +1347,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
   </div>
   <!-- 右侧功能区：路线模式切换 + 播放控制 -->
-  <div style="margin-left:auto; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-  <div id="route-mode-toggle">
-    <span class="rm-label">路线：</span>
-    <button class="rm-btn active" id="btn-mode-all">▶ 同时流动</button>
-    <button class="rm-btn" id="btn-mode-seq">⏩ 依次点亮</button>
-  </div>
-  <!-- 依次模式播放控制 -->
-  <div id="seq-controls">
-    <button class="seq-btn" id="btn-seq-pause">⏸ 暂停</button>
-    <button class="seq-btn" id="btn-seq-reset">↺ 重置</button>
-    <span id="seq-progress">0 / 0</span>
-  </div>
-  </div><!-- /右侧功能区 -->
+  <div id="header-controls">
+    <div id="route-mode-toggle">
+      <span class="rm-label">路线：</span>
+      <button class="rm-btn active" id="btn-mode-all">▶ 同时流动</button>
+      <button class="rm-btn" id="btn-mode-seq">⏩ 依次点亮</button>
+    </div>
+    <!-- 依次模式播放控制 -->
+    <div id="seq-controls">
+      <button class="seq-btn" id="btn-seq-pause">⏸ 暂停</button>
+      <button class="seq-btn" id="btn-seq-reset">↺ 重置</button>
+      <span id="seq-progress">0 / 0</span>
+    </div>
+  </div><!-- /header-controls -->
 </div>
 
 <!-- 主体 -->
