@@ -2809,6 +2809,24 @@ function seqStart(waypoints) {
     return;
   }
 
+  function showNodeThenStep(wp) {
+    if (!wp || !wp.lat || !wp.lon) {
+      seqTimer = setTimeout(step, 0);
+      return;
+    }
+    const globalIdx = WAYPOINTS.findIndex(w => w.order === wp.order);
+    const flyDur  = Math.max(0.2, 0.5 / seqSpeed);
+    const waitMs  = Math.max(250, 600 / seqSpeed);
+    const popupMs = Math.max(400, 1200 / seqSpeed);
+    map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: flyDur });
+    setTimeout(() => {
+      if (seqPaused || seqReady) return;
+      if (globalIdx >= 0 && markers[globalIdx]) markers[globalIdx].openPopup();
+      highlightTimeline(globalIdx);
+      seqTimer = setTimeout(step, popupMs);
+    }, waitMs);
+  }
+
   function step() {
     if (seqPaused || seqReady) return;
     if (seqIndex >= total) {
@@ -2829,9 +2847,9 @@ function seqStart(waypoints) {
     const wp = wps[seqIndex];
     if (wp && wp.lat && wp.lon) {
       const globalIdx = WAYPOINTS.findIndex(w => w.order === wp.order);
-      const flyDur    = Math.max(0.2, 0.5 / seqSpeed);   // flyTo 动画时长（秒），最短 0.2s
-      const waitMs    = Math.max(250, 600 / seqSpeed);    // 等动画结束的延迟（ms）
-      const popupMs   = Math.max(400, 1200 / seqSpeed);   // popup 停留时长（ms）
+      const flyDur    = Math.max(0.2, 0.5 / seqSpeed);
+      const waitMs    = Math.max(250, 600 / seqSpeed);
+      const popupMs   = Math.max(400, 1200 / seqSpeed);
 
       if (seqViewMode === 'follow') {
         map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: flyDur });
@@ -2861,7 +2879,8 @@ function seqStart(waypoints) {
     }
   }
 
-  seqTimer = setTimeout(step, 0);
+  // 先展示第一个节点，再开始逐段播放
+  showNodeThenStep(wps[0]);
   updateSeqButtons();
 }
 
