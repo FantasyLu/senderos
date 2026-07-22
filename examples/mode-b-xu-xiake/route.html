@@ -3266,6 +3266,22 @@ document.getElementById('btn-seq-view').addEventListener('click', () => {
   const btn = document.getElementById('btn-seq-view');
   btn.textContent = seqViewMode === 'follow' ? '📍 跟随' : '🗺 全览';
   btn.classList.toggle('active', seqViewMode === 'follow');
+
+  // 暂停状态下立即更新视野
+  if (seqPaused || seqReady) {
+    const wps = getValidWps(activeWaypoints);
+    const wp  = wps[seqIndex];
+    if (!wp) return;
+    if (seqViewMode === 'follow') {
+      if (wp.lat && wp.lon) map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: 0.5 });
+    } else {
+      const visiblePts = wps.slice(0, seqIndex + 1)
+        .filter(w => w.lat && w.lon)
+        .map(w => [w.lat, w.lon]);
+      if (visiblePts.length >= 2) map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.5 });
+      else if (visiblePts.length === 1) map.flyTo(visiblePts[0], Math.max(map.getZoom(), 7), { duration: 0.5 });
+    }
+  }
 });
 
 document.querySelectorAll('.seq-speed-btn').forEach(btn => {
