@@ -937,7 +937,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   /* ── 图例 ── */
 
-  /* 图层控件「地图类型」*/
+  /* 图层控件「地图样式」*/
   .leaflet-control-layers {
     border: 1px solid #c4b090 !important;
     border-radius: 6px !important;
@@ -957,7 +957,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     white-space: nowrap !important;
   }
   .leaflet-control-layers-toggle::before {
-    content: '🗺 地图类型';
+    content: '🗺 地图样式';
   }
   /* 展开状态：隐藏 toggle 按钮，改用插入的标题 div */
   .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
@@ -2582,7 +2582,7 @@ const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
 // 默认加载：国家地理底图
 natgeo.addTo(map);
 
-// 图层控件（右上角，折叠式，标题「地图类型」）
+// 图层控件（右上角，折叠式，标题「地图样式」）
 const layerControl = L.control.layers(
   {
     '🌿 国家地理': natgeo,
@@ -2596,14 +2596,14 @@ const layerControl = L.control.layers(
   { position: 'topright', collapsed: true }
 ).addTo(map);
 
-// 将控件标题改为「地图类型」
+// 将控件标题改为「地图样式」
 (function() {
   const el = layerControl.getContainer();
   // Leaflet 图层控件的 toggle 按钮是 .leaflet-control-layers-toggle
   // 展开后的标题区无内置 DOM，在容器顶部插入标题
   const title = document.createElement('div');
   title.className = 'layer-control-title';
-  title.textContent = '地图类型';
+  title.textContent = '地图样式';
   el.insertBefore(title, el.firstChild);
 })();
 
