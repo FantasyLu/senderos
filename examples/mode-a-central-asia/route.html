@@ -2281,31 +2281,8 @@ const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
   subdomains: 'abc',
 });
 
-// 中文地名注记：OSM 叠加层（有中文，网络好时加载，失败时底图依然可用）
-const osmLabel = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 18,
-  subdomains: 'abc',
-  opacity: 0.7,
-});
-
-// 不需要注记的底图名称集合（自带注记或不适合叠加）
-const NO_LABEL_BASES = new Set(['🗺 高德地图', '🌐 OSM']);
-
-// 默认加载：国家地理底图 + OSM 中文注记叠加
+// 默认加载：国家地理底图
 natgeo.addTo(map);
-osmLabel.addTo(map);
-
-// 切换底图时联动注记层
-map.on('baselayerchange', function(e) {
-  if (NO_LABEL_BASES.has(e.name)) {
-    // 高德/OSM 自带中文注记，移除叠加层避免重叠
-    map.removeLayer(osmLabel);
-  } else {
-    // Esri 底图叠加 OSM 中文注记
-    if (!map.hasLayer(osmLabel)) osmLabel.addTo(map);
-  }
-});
 
 // 图层控件（右上角，折叠式，标题「地图类型」）
 const layerControl = L.control.layers(
@@ -2317,9 +2294,7 @@ const layerControl = L.control.layers(
     '🗺 高德地图': gaode,
     '🌐 OSM':      osmLayer,
   },
-  {
-    '📍 中文地名': osmLabel,
-  },
+  {},
   { position: 'topright', collapsed: true }
 ).addTo(map);
 
