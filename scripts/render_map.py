@@ -494,7 +494,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.input, encoding="utf-8") as f:
-        waypoints = json.load(f)
+        raw = json.load(f)
+
+    # 支持两种格式：
+    #   新格式：{"meta": {...}, "waypoints": [...]}
+    #   旧格式：[...]（向后兼容）
+    if isinstance(raw, dict):
+        meta = raw.get("meta", {})
+        waypoints = raw.get("waypoints", [])
+    else:
+        meta = {}
+        waypoints = raw
+
+    # --title / --subtitle 参数优先；未传时从 meta 读取
+    title    = args.title    if args.title != "行程路线图" else meta.get("title",    args.title)
+    subtitle = args.subtitle if args.subtitle              else meta.get("subtitle", args.subtitle)
 
     if args.checkpoint:
         print(build_checkpoint_table(waypoints))
@@ -506,8 +520,8 @@ if __name__ == "__main__":
     else:
         render(
             waypoints,
-            title=args.title,
-            subtitle=args.subtitle,
+            title=title,
+            subtitle=subtitle,
             output_path=args.output,
             cluster=args.cluster,
             major_only=getattr(args, 'major_only', False),
