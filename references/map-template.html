@@ -616,6 +616,11 @@
       <button class="seq-btn" id="btn-seq-pause">⏸ 暂停</button>
       <button class="seq-btn" id="btn-seq-reset">↺ 重置</button>
       <button class="seq-btn active" id="btn-seq-view" title="切换视野模式">📍 跟随</button>
+      <span class="rm-label" style="margin-left:4px;">速度：</span>
+      <button class="seq-btn seq-speed-btn" data-speed="0.25">0.25×</button>
+      <button class="seq-btn seq-speed-btn" data-speed="0.5">0.5×</button>
+      <button class="seq-btn seq-speed-btn active" data-speed="1">1×</button>
+      <button class="seq-btn seq-speed-btn" data-speed="2">2×</button>
       <span id="seq-progress">0 / 0</span>
     </div>
   </div><!-- /header-controls -->
@@ -848,6 +853,7 @@ let seqTimer     = null;
 let seqPaused    = false;
 let seqReady     = false;   // 重置后等待用户触发
 let seqViewMode  = 'follow'; // 'follow'（跟随节点）| 'overview'（全览已点亮）
+let seqSpeed     = 1;        // 播放速度倍率：0.25 / 0.5 / 1 / 2
 
 const ANT_OPTIONS = {
   delay: 1500,
@@ -935,34 +941,35 @@ function seqStart(waypoints) {
     const wp = wps[seqIndex];
     if (wp && wp.lat && wp.lon) {
       const globalIdx = WAYPOINTS.findIndex(w => w.order === wp.order);
+      const flyDur    = Math.max(0.2, 0.5 / seqSpeed);   // flyTo 动画时长（秒），最短 0.2s
+      const waitMs    = Math.max(250, 600 / seqSpeed);    // 等动画结束的延迟（ms）
+      const popupMs   = Math.max(400, 1200 / seqSpeed);   // popup 停留时长（ms）
 
       if (seqViewMode === 'follow') {
-        // 跟随模式：flyTo 当前节点
-        map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: 0.5 });
+        map.flyTo([wp.lat, wp.lon], Math.max(map.getZoom(), 7), { duration: flyDur });
         setTimeout(() => {
           if (seqPaused || seqReady) return;
           if (globalIdx >= 0 && markers[globalIdx]) markers[globalIdx].openPopup();
           highlightTimeline(globalIdx);
-          seqTimer = setTimeout(step, 1200);
-        }, 600);
+          seqTimer = setTimeout(step, popupMs);
+        }, waitMs);
       } else {
-        // 全览模式：缩放纳入所有已点亮节点
         const visiblePts = wps.slice(0, seqIndex + 1)
           .filter(w => w.lat && w.lon)
           .map(w => [w.lat, w.lon]);
         if (visiblePts.length >= 2) {
-          map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: 0.4 });
+          map.flyToBounds(visiblePts, { padding: [60, 60], maxZoom: 10, duration: Math.max(0.2, 0.4 / seqSpeed) });
         }
         setTimeout(() => {
           if (seqPaused || seqReady) return;
           if (globalIdx >= 0 && markers[globalIdx]) markers[globalIdx].openPopup();
           highlightTimeline(globalIdx);
-          seqTimer = setTimeout(step, 1200);
-        }, 500);
+          seqTimer = setTimeout(step, popupMs);
+        }, Math.max(200, 500 / seqSpeed));
       }
     } else {
       // 无坐标节点直接跳过
-      seqTimer = setTimeout(step, 400);
+      seqTimer = setTimeout(step, Math.max(150, 400 / seqSpeed));
     }
   }
 
@@ -1352,6 +1359,14 @@ document.getElementById('btn-seq-view').addEventListener('click', () => {
   const btn = document.getElementById('btn-seq-view');
   btn.textContent = seqViewMode === 'follow' ? '📍 跟随' : '🗺 全览';
   btn.classList.toggle('active', seqViewMode === 'follow');
+});
+
+document.querySelectorAll('.seq-speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    seqSpeed = parseFloat(btn.dataset.speed);
+    document.querySelectorAll('.seq-speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
 });
 
 // ── 时间轴侧边栏 toggle ──
