@@ -247,6 +247,19 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 
 **等用户确认（或修改）后，才进入渲染。**
 
+确认请求格式：
+
+```
+以上节点信息是否正确？如需删除或修改任意行，请告知。
+
+📋 地图基本信息确认：
+  标题：<meta.title>
+  副标题：<meta.subtitle>
+  （依据：首节点 time_raw=「…」，末节点 time_raw=「…」，作者/人物=「…」）
+
+如需修改标题或副标题，请一并告知，确认后进入渲染。
+```
+
 ---
 
 ### Phase A-4.5：节点密度判断与显示方案选择
@@ -282,11 +295,33 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 
 ### Phase A-5：生成地图
 
+渲染前，先将 `meta` 字段写入 waypoints JSON（title/subtitle 存在数据中，无需命令行参数）：
+
+```json
+{
+  "meta": {
+    "title": "<见下方规则>",
+    "subtitle": "<见下方规则>"
+  },
+  "waypoints": [...]
+}
 ```
+
+**`meta` 字段填写规则（填写前必须抽样读取 ≥3 个节点的 `chapter_title` 和 `time_raw` 判断性质）**：
+
+| 场景 | title | subtitle |
+|------|-------|----------|
+| 游记/传记（作者即主角）| `《书名》· 作者路线` | `作者名 著 · 起止年`（无年份则只写 `作者名 著`）|
+| 历史人物（无明确作品）| `人物名行程路线` | `朝代/时代 · 起止年` |
+| 文学/影视作品中的虚构人物 | `《作品名》· 人物名路线` | `作者名 著` 或 `出版年/年代` |
+
+- **时间跨度**：从 waypoints 首尾有效 `time_raw` 中提取；`time_raw` 普遍为空时省略
+- **时间跨度含义**：行程发生的时间，而非作品出版时间（历史人物检索模式除外）
+- ⚠️ 禁止凭文件名或书名联想填写；必须有节点数据或用户陈述为依据
+
+```bash
 python scripts/render_map.py output/<书名>_waypoints_final.json \
   output/<书名>_路线图.html \
-  --title "<书名>路线图" \
-  --subtitle "<章节范围或时间范围>" \
   [--cluster]      # 启用 markercluster 聚合
   [--major-only]   # 仅渲染主要节点
   [--stages]       # 启用阶段切换器（按章节）
@@ -439,15 +474,28 @@ TIME_RANGE = {
 
 **等用户确认后进入渲染。**
 
+确认请求格式：
+
+```
+以上节点信息是否正确？如需删除或修改任意行，请告知。
+
+📋 地图基本信息确认：
+  标题：<meta.title>
+  副标题：<meta.subtitle>
+  （依据：首节点 time_raw=「…」，末节点 time_raw=「…」，作者/人物=「…」）
+
+如需修改标题或副标题，请一并告知，确认后进入渲染。
+```
+
 ---
 
 ### Phase B-4：生成地图
 
-```
+`meta` 字段填写规则与 Phase A-5 完全相同，渲染前写入 waypoints JSON。
+
+```bash
 python scripts/render_map.py output/<人物名>_waypoints_final.json \
   output/<人物名>_路线图.html \
-  --title "<人物名>行程路线图" \
-  --subtitle "<时间跨度>" \
   [--cluster] [--major-only] [--stages]
 ```
 
@@ -532,6 +580,7 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 | 10 | 同一地点多次出现时创建多个图钉重叠 | 合并为一个图钉，visits[] 数组保存所有到访记录 |
 | 11 | PDF 中其他人物到过的地点混入目标人物路线 | source_sentence 的主语必须是目标人物或其别名，否则不纳入 |
 | 12 | 用户未指定人物时，默认假设是作者路线 | 必须先询问确认目标人物，再开始提取 |
+| 13 | 凭文件名、书名、人物名联想填写 `meta.title` / `meta.subtitle` 等描述性字段 | 填写前必须抽样读取 ≥3 个节点的 `chapter_title` 和 `time_raw`，判断年代和叙事性质后再填写 |
 
 ---
 
