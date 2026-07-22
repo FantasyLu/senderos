@@ -2527,7 +2527,12 @@ function seqStart(waypoints) {
 }
 
 function seqPauseToggle(waypoints) {
-  if (!seqTimer && !seqPaused && !seqReady) {
+  if (seqReady) {
+    // 重置后等待播放状态 → 直接开始
+    seqStart(waypoints);
+    return;
+  }
+  if (!seqTimer && !seqPaused) {
     seqStart(waypoints);
     return;
   }
