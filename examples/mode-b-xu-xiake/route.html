@@ -2781,11 +2781,20 @@ function seqStop() {
 function seqReset(waypoints) {
   seqStop();
   clearRoutes();
+  map.closePopup();
   seqIndex  = 0;
   seqReady  = true;
   seqPaused = false;
   updateSeqProgress(waypoints);
   updateSeqButtons();
+  // 恢复初始视野
+  if (validPoints.length > 1) {
+    map.flyToBounds(validPoints, { padding: [40, 40], duration: 0.6 });
+  } else if (validPoints.length === 1) {
+    map.flyTo(validPoints[0], 8, { duration: 0.6 });
+  }
+  // 清除时间轴高亮
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
 }
 
 function seqStart(waypoints) {
