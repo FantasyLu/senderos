@@ -501,82 +501,6 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 
 ---
 
-## Waypoints JSON 完整 Schema（渲染直接消费，字段名不得自由发挥）
-
-> ⚠️ **严重警告**：`map-template.html` 中的 JS 代码直接读取 JSON 字段名。
-> 字段名写错 → 地图静默失坏（popup 空白、时间轴不高亮、依次点亮不触发），没有任何报错。
-> **不论是 AI 提取还是手工构造，都必须严格对齐以下字段名。**
-
-### 顶层结构
-
-```json
-{
-  "meta": {
-    "title": "地图标题",
-    "subtitle": "副标题"
-  },
-  "waypoints": [ /* waypoint 对象数组，见下 */ ]
-}
-```
-
-### 单个 waypoint 对象（必填字段加 ★）
-
-```json
-{
-  "order": 1,                      // ★ 整数，从 1 开始编号，决定连线顺序
-  "place_raw": "昆明府",           // ★ 原文地名（popup 标题、时间轴显示）
-  "place_modern": "昆明",          // ★ 现代地名（坐标解析用）
-  "layer": "major",                // ★ "major" | "transit"（影响图钉样式和时间轴是否显示）
-  "confidence": "confirmed",       // ★ "confirmed" | "single_source" | "inferred" | "disputed"
-  "lat": 25.0389,                  // ★ 纬度（geocode.py 填入，手工构造时必须填）
-  "lon": 102.7183,                 // ★ 经度
-  "resolved": true,                // ★ 坐标是否成功解析（true/false）
-  "route_to_next": "straight",     // "described" | "straight"（暂未影响渲染，保留备用）
-  "geo_source": "nominatim",       // 坐标来源："ancient" | "nominatim" | "manual" | "unresolved"
-  "coord_note": "",                // 坐标备注，模糊匹配时说明（popup 底部显示）
-  "visits": [                      // ★ 数组，至少一个元素
-    {
-      "chapter_num": 3,            // 章节编号（整数），无则填 0
-      "chapter_title": "第三章·滇西之行",  // ★ popup/时间轴分组标题（JS 直接读取此字段名）
-      "time_raw": "万历四十一年九月初一",   // 原文时间，无则填 ""
-      "time_note": "约1613年10月",          // 公历换算，无把握则填 ""
-      "duration": "三日",                   // 停留时长，无则填 ""
-      "description": "出发，休整补给三日",  // ★ popup 正文（JS 直接读取此字段名）
-      "source": "pdf",                      // "pdf" | "user-pdf" | "web" | "inferred"
-      "source_sentence": "万历四十一年九月初一，余自昆明府启程……"  // 原文依据句
-    }
-  ]
-}
-```
-
-### 字段名陷阱速查（最容易写错的地方）
-
-| 错误写法 | 正确写法 | 后果 |
-|---------|---------|------|
-| `name` | `place_raw` | popup 标题空白 |
-| `visits[].ref` | `visits[].chapter_title` | 章节信息不显示 |
-| `visits[].note` | `visits[].description` | popup 正文空白 |
-| `type: "main"` | `layer: "major"` | 节点统计为 0，图钉样式异常 |
-| `type: "waypoint"` | `layer: "transit"` | 同上 |
-| 缺少 `order` 字段 | 每个节点必须有 `order` | 依次点亮 popup/时间轴完全不触发 |
-
-### 手工构造 waypoints 的强制检查清单
-
-在调用 `render_map.py` 前，逐项确认：
-
-```
-□ 每个节点都有 order（从 1 开始，整数，不重复）
-□ place_raw 字段存在（不是 name）
-□ layer 值是 "major" 或 "transit"（不是 "main" 或 "waypoint"）
-□ visits 是数组且至少有一个元素
-□ visits[0].chapter_title 字段存在（不是 ref）
-□ visits[0].description 字段存在（不是 note 或 desc）
-□ lat / lon 已填入数值（不是 null 或字符串）
-□ resolved: true（坐标有效时）
-```
-
----
-
 ## 地图规范（渲染标准）
 
 ### 图钉颜色与样式
@@ -657,8 +581,6 @@ python scripts/render_map.py output/<人物名>_waypoints_final.json \
 | 11 | PDF 中其他人物到过的地点混入目标人物路线 | source_sentence 的主语必须是目标人物或其别名，否则不纳入 |
 | 12 | 用户未指定人物时，默认假设是作者路线 | 必须先询问确认目标人物，再开始提取 |
 | 13 | 凭文件名、书名、人物名联想填写 `meta.title` / `meta.subtitle` 等描述性字段 | 填写前必须抽样读取 ≥3 个节点的 `chapter_title` 和 `time_raw`，判断年代和叙事性质后再填写 |
-| 14 | 手工构造 waypoints 时用 `name`/`ref`/`note`/`type:"main"` 等「语义上合理」的字段名 | 必须严格使用 Schema 规定的字段名：`place_raw`/`chapter_title`/`description`/`layer:"major"`；模板 JS 静默失坏，没有报错 |
-| 15 | 手工构造节点时省略 `order` 字段 | 每个节点必须有从 1 开始的 `order` 整数；缺失时依次点亮的 popup 和时间轴高亮完全不触发 |
 
 ---
 
