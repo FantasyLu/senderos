@@ -110,9 +110,8 @@
 
 | 文件 | 说明 |
 |------|------|
-| `route.html` | 最终地图，浏览器直接打开 |
-| `中亚行纪_法特兰_waypoints_draft.json` | 原始提取节点（含 source_sentence 原文依据） |
-| `中亚行纪_法特兰_waypoints_render.json` | geocode 后可直接送入渲染管线的纯数组 |
+| `中亚行纪：法特兰游记路线.html` | 最终地图，浏览器直接打开 |
+| `中亚行纪_waypoints_v3_final.json` | 完整节点数据（36 节点，含 source_sentence 原文依据） |
 | `中亚行纪.epub` | 原始书籍文件（.gitignore 已排除，需手动 add） |
 
 ---
@@ -122,9 +121,6 @@
 ```bash
 # 从仓库根目录执行
 python scripts/render_map.py \
-  examples/mode-a-central-asia/中亚行纪_法特兰_waypoints_render.json \
-  examples/mode-a-central-asia/route.html \
-  --title "《中亚行纪》埃丽卡·法特兰" \
-  --subtitle "土库曼斯坦 · 哈萨克斯坦 · 塔吉克斯坦 · 吉尔吉斯斯坦 · 乌兹别克斯坦" \
-  --stages
+  examples/mode-a-central-asia/中亚行纪_waypoints_v3_final.json \
+  examples/mode-a-central-asia/中亚行纪：法特兰游记路线.html
 ```
