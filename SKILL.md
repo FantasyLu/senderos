@@ -273,32 +273,27 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 
 ### Phase A-4.5：节点密度判断与显示方案选择
 
-坐标确认后，统计有效节点数（resolved=true 的节点），按阈值给出建议：
+**`--stages` 对 Mode A 为默认开启**：Mode A 来自书籍解析，节点天然携带 `chapter_title`，章节筛选是最直觉的功能，无需用户选择，始终加入渲染命令。
+
+坐标确认后，统计有效节点数（resolved=true 的节点），仅判断是否额外加 `--cluster`：
 
 ```
-节点数 ≤ 30：
-  → 直接渲染，全部显示，无需用户选择
+节点数 ≤ 50：
+  → 直接渲染，--stages 默认开启，无需额外询问
 
-节点数 31–80：
+节点数 > 50：
   → 向用户展示选项：
-    「共提取 N 个有效节点，地图可能较为密集。建议选择显示方式：
-      ① 全部显示 + 聚合模式（相近图钉自动合并，缩放后展开）【推荐】
-      ② 仅显示主要节点（major），途经点隐藏
-      ③ 按章节分段显示（顶部切换器，每次只看一章）」
-  → 等用户回复，默认选 ①
-
-节点数 > 80：
-  → 强烈建议分段：
-    「共 N 个节点，建议按章节分段显示，否则地图会非常拥挤。
-      ① 按章节分段显示（推荐）
-      ② 强行全部显示 + 聚合模式」
-  → 等用户回复，默认选 ①
+    「共提取 N 个有效节点，建议选择是否启用图钉聚合：
+      ① --stages（章节切换）【已默认开启】
+      ② --stages + --cluster（章节切换 + 相近图钉自动合并）【推荐】
+      ③ --stages + --major-only（章节切换 + 仅主要节点）」
+  → 等用户回复，默认选 ②
 ```
 
-用户选择结果传入渲染命令：
-- 选 `①全部+聚合`：`--cluster`
-- 选 `②仅主要节点`：`--major-only`
-- 选 `③/①分段显示`：`--stages`（按章节分组，顶部切换器）
+用户选择结果传入渲染命令（`--stages` 始终存在）：
+- 选 `①`：`--stages`
+- 选 `②`：`--stages --cluster`
+- 选 `③`：`--stages --major-only`
 
 ---
 
@@ -331,9 +326,9 @@ python scripts/parse_ebook.py book.mobi --output output/chapters.json
 ```bash
 python scripts/render_map.py output/<书名>_waypoints_final.json \
   output/<书名>_路线图.html \
-  [--cluster]      # 启用 markercluster 聚合
-  [--major-only]   # 仅渲染主要节点
-  [--stages]       # 启用阶段切换器（按章节）
+  --stages              # Mode A 必加，默认开启章节切换器
+  [--cluster]           # 节点 > 50 时可选，相近图钉自动合并
+  [--major-only]        # 可选，仅渲染主要节点
 ```
 
 告知用户：「地图已生成：`output/<书名>_路线图.html`，用浏览器打开即可查看。」
